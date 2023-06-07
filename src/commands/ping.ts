@@ -1,5 +1,4 @@
 import { CommandInteraction, Message, SlashCommandBuilder } from "discord.js";
-import {Command} from "../interfaces/Command";
 
 export const ping = (message: Message):void => {
     message.reply("Pong!");
