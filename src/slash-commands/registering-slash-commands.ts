@@ -1,12 +1,10 @@
-import { REST, Routes } from "discord.js";
-import { logger } from "../logger/pino";
-import { ping_slash } from "./index";
+import { REST, Routes } from 'discord.js';
+import { logger } from '../logger/pino';
+import { ping_slash } from './index';
 
-require("dotenv").config();
+require('dotenv').config();
 
-const commands = [
-    ping_slash.data.toJSON(),
-];
+const commands = [JSON.stringify(ping_slash.data)];
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
 
@@ -16,8 +14,11 @@ const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
 
         // The put method is used to fully refresh all commands in the guild with the current set
         const data = await rest.put(
-            Routes.applicationGuildCommands(process.env.DISCORD_APPLICATION_ID!, process.env.DISCORD_DEV_SERVER_ID!),
-            { body: commands },
+            Routes.applicationGuildCommands(
+                process.env.DISCORD_APPLICATION_ID!,
+                process.env.DISCORD_DEV_SERVER_ID!
+            ),
+            { body: commands }
         );
 
         // @ts-ignore
