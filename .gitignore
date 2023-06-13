@@ -133,6 +133,10 @@ dist
 
 .eslintrc
 
+# Prettier
+
+.prettierrc
+
 # Typescript
 
 build/
