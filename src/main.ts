@@ -1,5 +1,3 @@
-import { Config } from './startup/Config/Config';
-
 require('dotenv').config();
 import { logger } from './logger/pino';
 import { Partials, GatewayIntentBits, Events, GuildBasedChannel } from 'discord.js';
