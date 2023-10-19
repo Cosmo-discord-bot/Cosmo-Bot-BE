@@ -1,14 +1,13 @@
 import { Client, ClientOptions, Collection } from 'discord.js';
 import { ping_slash } from '../commands/ping';
 import { Command } from '../interfaces/Command';
-import { Config } from '../startup/Config/Config';
+import { Config } from '../dbInteractions/Config';
 import { MongoDB } from '../db';
-import { ConfigModel } from '../interfaces/ConfigModel';
 import { logger } from '../logger/pino';
 
 export class CustomClient extends Client {
     commands: Collection<string, Command>;
-    config: Config | undefined;
+    config!: Config;
     constructor(options: ClientOptions) {
         super(options);
 
@@ -25,16 +24,7 @@ export class CustomClient extends Client {
             let db: MongoDB = new MongoDB();
             await db.connect();
             this.config = new Config(db.connection!);
-
-            const confModel: ConfigModel = {
-                guildId: '123',
-                prefix: '!',
-                color: '#FF0000',
-                mainChannel: '123',
-            };
-
             await this.config.loadConfig();
-            // await config.insertNewConfig(confModel);
         } catch (e) {
             logger.error(e);
         }
