@@ -139,3 +139,7 @@ dist
 # Typescript
 
 build/
+
+# Idea
+
+.idea/
