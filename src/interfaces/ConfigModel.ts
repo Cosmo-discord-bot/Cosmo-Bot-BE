@@ -1,6 +1,6 @@
 export interface ConfigModel {
-    guildId: String;
-    prefix: String;
-    color: String;
-    mainChannel: String;
+    guildId: string;
+    prefix: string;
+    color: string;
+    mainChannel: string;
 }

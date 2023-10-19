@@ -1,13 +1,13 @@
-import { ConfigModel } from '../../interfaces/ConfigModel';
+import { ConfigModel } from '../interfaces/ConfigModel';
 import mongoose, { Connection } from 'mongoose';
-import { logger } from '../../logger/pino';
+import { logger } from '../logger/pino';
 import { Collection } from 'discord.js';
 
 export class Config {
     private readonly model: mongoose.Model<ConfigModel>;
     private readonly collection: string = 'Configs';
     private connection: Connection;
-    public configs: Collection<String, ConfigModel>;
+    public configs: Collection<string, ConfigModel>;
 
     constructor(connection: Connection) {
         this.connection = connection;
@@ -23,12 +23,12 @@ export class Config {
             this.collection
         );
 
-        this.configs = new Collection<String, ConfigModel>();
+        this.configs = new Collection<string, ConfigModel>();
     }
 
     public async loadConfig(): Promise<void> {
         const configs_obj: ConfigModel[] = await this.model.find({}).lean();
-        for (let conf of configs_obj) {
+        for (const conf of configs_obj) {
             this.configs.set(conf.guildId, conf);
         }
     }
