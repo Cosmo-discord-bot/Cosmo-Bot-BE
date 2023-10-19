@@ -1,18 +1,23 @@
-import { Message } from "discord.js";
-import { logger } from "./logger/pino";
+import { Collection, Message } from 'discord.js';
+import { logger } from './logger/pino';
 
-import { CommandsEnum } from "./enums/commands-enum";
-import { ping } from "./commands";
+import { CommandsEnum } from './enums/commands-enum';
+import { ConfigModel } from './interfaces/ConfigModel';
+import { ping, prefix } from './commands';
 
-const prefix = "!"
-export const router = (message: Message ):void => {
+export const router = (message: Message, guildConfigs: Collection<string, ConfigModel>): void => {
+    let config: ConfigModel = guildConfigs.get(message.guildId!)!;
+    if (message.author.bot || !message.content.startsWith(config.prefix)) return;
 
-    if (message.author.bot || !message.content.startsWith(prefix)) return;
-
-    let args:string[] = message.content.slice(prefix.length).trim().split(/ +/g);
-    let command:string = args[0].toLowerCase();
-    logger.info(message.content)
-    switch (command){
-        case CommandsEnum.Ping: ping(message);
+    let args: string[] = message.content.slice(config.prefix.length).trim().split(/ +/g);
+    let command: string = args[0].toLowerCase();
+    logger.info(`${message.guildId} ${message.content}`);
+    switch (command) {
+        case CommandsEnum.Ping:
+            ping(message);
+            break;
+        case CommandsEnum.Prefix:
+            prefix(message);
+            break;
     }
-}
+};

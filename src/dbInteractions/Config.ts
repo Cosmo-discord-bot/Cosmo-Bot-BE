@@ -36,4 +36,16 @@ export class Config {
     public async insertNewConfig(config: ConfigModel): Promise<void> {
         await this.model.create(config);
     }
+
+    public async updateConfig(config: ConfigModel): Promise<void> {
+        try {
+            let response: mongoose.UpdateWriteOpResult = await this.model.replaceOne(
+                { guildId: config.guildId },
+                config
+            );
+            if (!response.acknowledged) throw new Error('updateConfig: Config updating failed');
+        } catch (error) {
+            logger.error(`updateConfig: Config updating failed - ${config.guildId}`);
+        }
+    }
 }

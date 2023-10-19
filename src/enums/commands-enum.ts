@@ -1,3 +1,5 @@
 export enum CommandsEnum {
-    Ping = "ping"
+    Ping = 'ping',
+    Prefix = 'prefix',
+    Color = 'color',
 }
