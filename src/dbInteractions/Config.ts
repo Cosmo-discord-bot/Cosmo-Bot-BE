@@ -16,6 +16,7 @@ export class Config {
             prefix: { type: String, required: true },
             color: { type: String, required: true },
             mainChannel: { type: String, required: true },
+            rolesChannel: { type: String, required: true },
         });
         this.model = this.connection.model<ConfigModel>(
             this.collection,

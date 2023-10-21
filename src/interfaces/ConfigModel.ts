@@ -3,4 +3,5 @@ export interface ConfigModel {
     prefix: string;
     color: string;
     mainChannel: string;
+    rolesChannel: string;
 }
