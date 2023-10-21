@@ -4,6 +4,7 @@ import { SetEnum } from '../../enums/setEnum';
 import { setMainChannel } from './setMainChannel';
 import { setPrefix } from './setPrefix';
 import { logger } from '../../logger/pino';
+import { setRolesChannel } from './setRolesChannel';
 
 export const setRouter = (message: Message): void => {
     try {
@@ -16,8 +17,19 @@ export const setRouter = (message: Message): void => {
             case SetEnum.MainChannel:
                 setMainChannel(message);
                 break;
+            case SetEnum.RolesChannel:
+                setRolesChannel(message);
+                break;
+            default:
+                throw new Error('setRouter: setting does not exist');
         }
     } catch (error) {
+        if (error instanceof Error) {
+            logger.error(error.message);
+            message.reply(error.message);
+            return;
+        }
+        message.reply('setRouter: Something went wrong - general error');
         logger.error('setRouter: Something went wrong - general error');
     }
 };
