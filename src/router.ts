@@ -3,7 +3,7 @@ import { logger } from './logger/pino';
 
 import { CommandsEnum } from './enums/commands-enum';
 import { ConfigModel } from './interfaces/ConfigModel';
-import { ping, prefix } from './commands';
+import * as commands from './commands';
 
 export const router = (message: Message, guildConfigs: Collection<string, ConfigModel>): void => {
     let config: ConfigModel = guildConfigs.get(message.guildId!)!;
@@ -14,10 +14,10 @@ export const router = (message: Message, guildConfigs: Collection<string, Config
     logger.info(`${message.guildId} ${message.content}`);
     switch (command) {
         case CommandsEnum.Ping:
-            ping(message);
+            commands.ping(message);
             break;
-        case CommandsEnum.Prefix:
-            prefix(message);
+        case CommandsEnum.Set:
+            commands.setRouter(message);
             break;
     }
 };

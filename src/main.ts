@@ -33,11 +33,11 @@ client.once(Events.ClientReady, (): void => {
         for (const gID of guildIDs) {
             if (client.config.configs.get(gID) == null) {
                 let guild: Guild = client.guilds.cache.get(gID)!;
-                await client.config.insertNewConfig(generateFirstConfig(guild));
+                await client.config.insertNewConfig(await generateFirstConfig(guild));
             }
         }
         await client.config.loadConfig();
-        logger.info(client.config.configs.toJSON());
+        // logger.info(client.config.configs.toJSON());
     });
 });
 
@@ -45,7 +45,7 @@ client.on(Events.MessageCreate, message => router(message, client.config.configs
 client.on(Events.InteractionCreate, async interaction => HandleSlashCommands(interaction));
 
 client.on(Events.GuildCreate, async guild => {
-    const conf: ConfigModel = generateFirstConfig(guild);
+    const conf: ConfigModel = await generateFirstConfig(guild);
 
     client.config?.insertNewConfig(conf);
     client.config?.loadConfig();

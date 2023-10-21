@@ -1,2 +1,2 @@
 export { ping } from './ping';
-export { prefix } from './prefix';
+export { setRouter } from './setCommands/setRouter';
