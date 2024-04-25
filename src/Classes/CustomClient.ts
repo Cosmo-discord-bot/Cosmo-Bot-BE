@@ -1,16 +1,16 @@
 import { Client, ClientOptions, Collection } from 'discord.js';
 import { ping_slash } from '../commands/ping';
-import { ICommand } from '../interfaces/ICommand';
-import { ConfigDB } from '../dbInteractions/ConfigDB';
+import { Command } from '../interfaces/Command';
+import { Config } from '../dbInteractions/Config';
 import { MongoDB } from '../db';
 import { logger } from '../logger/pino';
 
 export class CustomClient extends Client {
-    commands: Collection<string, ICommand>;
-    config!: ConfigDB;
-
+    commands: Collection<string, Command>;
+    config!: Config;
     constructor(options: ClientOptions) {
         super(options);
+
         this.commands = new Collection();
         this.loadCommands();
     }
@@ -21,10 +21,9 @@ export class CustomClient extends Client {
 
     public async __initClient__(): Promise<void> {
         try {
-            // Load config from MongoDB
             let db: MongoDB = new MongoDB();
             await db.connect();
-            this.config = new ConfigDB(db.connection!);
+            this.config = new Config(db.connection!);
             await this.config.loadConfig();
         } catch (e) {
             logger.error(e);
