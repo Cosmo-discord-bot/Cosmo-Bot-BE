@@ -1,7 +1,7 @@
 import { CommandInteraction, Message, SlashCommandBuilder } from 'discord.js';
-import { Command } from '../../interfaces/Command';
+import { ICommand } from '../../interfaces/ICommand';
 import { logger } from '../../logger/pino';
-import { ConfigModel } from '../../interfaces/ConfigModel';
+import { IConfig } from '../../interfaces/IConfig';
 import { getSecondArgumentFromText } from '../../helper/getSecondArgumentFromText';
 
 export const setPrefix = (message: Message): void => {
@@ -17,8 +17,8 @@ export const setPrefix = (message: Message): void => {
             throw new Error(`setPrefix: Wrong prefix`);
         }
 
-        const config: ConfigModel = message.client.config.configs.find(
-            (config: ConfigModel): boolean => config.guildId === message.guildId
+        const config: IConfig = message.client.config.configs.find(
+            (config: IConfig): boolean => config.guildId === message.guildId
         )!;
         config.prefix = newPrefix;
         message.client.config.updateConfig(config).then(() => message.client.config.loadConfig());
@@ -34,7 +34,7 @@ export const setPrefix = (message: Message): void => {
     }
 };
 
-export const prefix_slash: Command = {
+export const prefix_slash: ICommand = {
     data: new SlashCommandBuilder().setName('prefix').setDescription('Change prefix for commands'),
     async execute(interaction: CommandInteraction) {
         await interaction.reply('Pong!');

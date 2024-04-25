@@ -1,12 +1,12 @@
 import { Collection, Message } from 'discord.js';
 import { logger } from './logger/pino';
 
-import { CommandsEnum } from './enums/commands-enum';
-import { ConfigModel } from './interfaces/ConfigModel';
+import { CommandsEnum } from './enums/CommandsEnum';
+import { IConfig } from './interfaces/IConfig';
 import * as commands from './commands';
 
-export const router = (message: Message, guildConfigs: Collection<string, ConfigModel>): void => {
-    let config: ConfigModel = guildConfigs.get(message.guildId!)!;
+export const router = (message: Message, guildConfigs: Collection<string, IConfig>): void => {
+    let config: IConfig = guildConfigs.get(message.guildId!)!;
     if (message.author.bot || !message.content.startsWith(config.prefix)) return;
 
     let args: string[] = message.content.slice(config.prefix.length).trim().split(/ +/g);
