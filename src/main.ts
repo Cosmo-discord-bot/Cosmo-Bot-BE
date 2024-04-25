@@ -23,29 +23,31 @@ const client: CustomClient = new CustomClient({
     partials: [Partials.GuildScheduledEvent, Partials.GuildMember],
 });
 
+const eventHandlers: IEventHandler = {};
+
 /*
     Once client is ready, get config for all guilds.
     If guild doesn't have config, create a default one.
 */
 client.once(Events.ClientReady, (): void => {
-    logger.info('Ready!');
+    logger.info('Client is ready!');
     const guildIDs: string[] = client.guilds.cache.map(guild => guild.id);
     logger.info(guildIDs);
     client.__initClient__().then(async () => {
         for (const gID of guildIDs) {
+            // Check if all guilds have a config and generate one if not
             if (client.config.configs.get(gID) == null) {
                 let guild: Guild = client.guilds.cache.get(gID)!;
                 await client.config.insertNewConfig(await generateFirstConfig(guild));
             }
+            // Create event handlers for all guilds
+            eventHandlers[gID] = new EventHandler(client, gID);
         }
         await client.config.loadConfig();
-        // logger.info(client.config.configs.toJSON());
     });
 });
-
 client.on(Events.MessageCreate, message => router(message, client.config.configs));
 client.on(Events.InteractionCreate, async interaction => HandleSlashCommands(interaction));
-
 client.on(Events.GuildCreate, async guild => {
     const conf: IConfig = await generateFirstConfig(guild);
     /*
@@ -55,5 +57,16 @@ client.on(Events.GuildCreate, async guild => {
     await client.config.insertNewConfig(conf);
     client.config?.loadConfig();
 });
-
+client.on(Events.GuildScheduledEventCreate, (event: GuildScheduledEvent) => {
+    try {
+        if (!eventHandlers[event.guildId]) {
+            throw new Error('Guild not found');
+        }
+        eventHandlers[event.guildId].createEvent(event);
+    } catch (e) {
+        logger.error('GuildScheduledEventCreate: ' + e);
+    }
+});
+client.on(Events.GuildScheduledEventUpdate, () => {});
+client.on(Events.GuildScheduledEventDelete, () => {});
 client.login(process.env.DISCORD_TOKEN);

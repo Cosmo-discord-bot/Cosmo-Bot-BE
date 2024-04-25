@@ -1,9 +1,5 @@
-import { ConfigModel } from '../interfaces/ConfigModel';
-import mongoose, { Connection } from 'mongoose';
-import { logger } from '../logger/pino';
-import { Collection } from 'discord.js';
-
-export class Config {
+/*
+export class Events {
     private readonly model: mongoose.Model<ConfigModel>;
     private readonly collection: string = 'Configs';
     private connection: Connection;
@@ -11,13 +7,7 @@ export class Config {
 
     constructor(connection: Connection) {
         this.connection = connection;
-        const configSchema: mongoose.Schema<ConfigModel> = new mongoose.Schema<ConfigModel>({
-            guildId: { type: String, required: true },
-            prefix: { type: String, required: true },
-            color: { type: String, required: true },
-            mainChannel: { type: String, required: true },
-            rolesChannel: { type: String, required: true },
-        });
+        const configSchema: mongoose.Schema<ConfigModel> = new mongoose.Schema<ConfigModel>({});
         this.model = this.connection.model<ConfigModel>(
             this.collection,
             configSchema,
@@ -50,3 +40,4 @@ export class Config {
         }
     }
 }
+*/
