@@ -1,12 +1,14 @@
-import { generateFirstConfig } from './startup/config';
-
-require('dotenv').config();
+import { generateFirstConfig } from './startup/init';
 import { logger } from './logger/pino';
-import { Partials, GatewayIntentBits, Events, Guild } from 'discord.js';
+import { Events, GatewayIntentBits, Guild, GuildScheduledEvent, Partials } from 'discord.js';
 import { router } from './router';
 import { HandleSlashCommands } from './slash-commands/set-slash-commands';
 import { CustomClient } from './Classes/CustomClient';
-import { ConfigModel } from './interfaces/ConfigModel';
+import { IConfig } from './interfaces/IConfig';
+import { EventHandler } from './commands/EventHandler';
+import { IEventHandler } from './interfaces/IEventHandler';
+
+require('dotenv').config();
 
 const client: CustomClient = new CustomClient({
     intents: [
@@ -45,9 +47,12 @@ client.on(Events.MessageCreate, message => router(message, client.config.configs
 client.on(Events.InteractionCreate, async interaction => HandleSlashCommands(interaction));
 
 client.on(Events.GuildCreate, async guild => {
-    const conf: ConfigModel = await generateFirstConfig(guild);
-
-    client.config?.insertNewConfig(conf);
+    const conf: IConfig = await generateFirstConfig(guild);
+    /*
+      TODO - Add a check to see if the guild already exists in the database
+      TODO - Create new EventHandler
+    */
+    await client.config.insertNewConfig(conf);
     client.config?.loadConfig();
 });
 
