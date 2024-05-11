@@ -1,9 +1,10 @@
 import { Collection } from 'discord.js';
-import { Config } from '../dbInteractions/Config';
+import { EventsDB } from '../dbInteractions/EventsDB';
 
 declare module 'discord.js' {
     export interface Client {
         commands: Collection<String, any>;
-        config: Config;
+        config: ConfigDB;
+        events: EventsDB;
     }
 }

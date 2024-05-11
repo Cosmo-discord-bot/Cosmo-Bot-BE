@@ -1,43 +1,61 @@
-/*
-export class Events {
-    private readonly model: mongoose.Model<ConfigModel>;
-    private readonly collection: string = 'Configs';
+import mongoose, { Connection } from 'mongoose';
+import { IEvent } from '../interfaces/IEvent';
+import { logger } from '../logger/pino';
+
+export class EventsDB {
+    private readonly model: mongoose.Model<IEvent>;
+    private readonly collection: string = 'Events';
     private connection: Connection;
-    public configs: Collection<string, ConfigModel>;
+    public events: Map<string, IEvent>;
 
     constructor(connection: Connection) {
         this.connection = connection;
-        const configSchema: mongoose.Schema<ConfigModel> = new mongoose.Schema<ConfigModel>({});
-        this.model = this.connection.model<ConfigModel>(
-            this.collection,
-            configSchema,
-            this.collection
-        );
+        const eventSchema: mongoose.Schema<IEvent> = new mongoose.Schema<IEvent>({
+            eventName: { type: String, required: true },
+            guildId: { type: String, required: true },
+            eventsCategoryId: { type: String, required: true },
+            eventId: { type: String, required: true },
+            roleId: { type: String, required: true },
+            channelId: { type: String, required: true },
+        });
+        this.model = this.connection.model<IEvent>(this.collection, eventSchema, this.collection);
 
-        this.configs = new Collection<string, ConfigModel>();
+        this.events = new Map<string, IEvent>();
     }
 
-    public async loadConfig(): Promise<void> {
-        const configs_obj: ConfigModel[] = await this.model.find({}).lean();
-        for (const conf of configs_obj) {
-            this.configs.set(conf.guildId, conf);
+    public async loadEvents(): Promise<void> {
+        const eventsArray: IEvent[] = await this.model.find({}).lean();
+        for (const event of eventsArray) {
+            this.events.set(event.eventId, event);
         }
+        logger.info('Events loaded successfully!');
     }
 
-    public async insertNewConfig(config: ConfigModel): Promise<void> {
-        await this.model.create(config);
+    public async insertEvent(event: IEvent): Promise<void> {
+        await this.model.create(event);
+        this.events.set(event.eventId, event);
+        logger.info(`Event inserted successfully - ${event.guildId}`);
     }
 
-    public async updateConfig(config: ConfigModel): Promise<void> {
+    public async updateEvents(event: IEvent): Promise<void> {
         try {
             let response: mongoose.UpdateWriteOpResult = await this.model.replaceOne(
-                { guildId: config.guildId },
-                config
+                { eventId: event.eventId },
+                event
             );
             if (!response.acknowledged) throw new Error('updateConfig: Config updating failed');
         } catch (error) {
-            logger.error(`updateConfig: Config updating failed - ${config.guildId}`);
+            logger.error(`updateConfig: Config updating failed - ${event.guildId}`);
+        }
+    }
+
+    public async deleteEvent(eventId: string): Promise<void> {
+        try {
+            let response = await this.model.deleteOne({ eventId: eventId });
+            if (!response.acknowledged) throw new Error('deleteEvent: Event deletion failed');
+            this.events.delete(eventId);
+        } catch (error) {
+            logger.error(`deleteEvent: Event deletion failed - ${eventId}`);
         }
     }
 }
-*/

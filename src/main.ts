@@ -1,6 +1,13 @@
 import { generateFirstConfig } from './startup/init';
 import { logger } from './logger/pino';
-import { Events, GatewayIntentBits, Guild, GuildScheduledEvent, Partials } from 'discord.js';
+import {
+    Events,
+    GatewayIntentBits,
+    Guild,
+    GuildScheduledEvent,
+    PartialGuildScheduledEvent,
+    Partials,
+} from 'discord.js';
 import { router } from './router';
 import { HandleSlashCommands } from './slash-commands/set-slash-commands';
 import { CustomClient } from './Classes/CustomClient';
@@ -68,5 +75,16 @@ client.on(Events.GuildScheduledEventCreate, (event: GuildScheduledEvent) => {
     }
 });
 client.on(Events.GuildScheduledEventUpdate, () => {});
-client.on(Events.GuildScheduledEventDelete, () => {});
+client.on(
+    Events.GuildScheduledEventDelete,
+    (event: GuildScheduledEvent | PartialGuildScheduledEvent) => {
+        try {
+            eventHandlers[event.guildId].deleteEvent(event);
+        } catch (e) {
+            logger.error('GuildScheduledEventDelete: ' + e);
+        }
+    }
+);
+client.on(Events.GuildScheduledEventUserAdd, () => {});
+client.on(Events.GuildScheduledEventUserRemove, () => {});
 client.login(process.env.DISCORD_TOKEN);

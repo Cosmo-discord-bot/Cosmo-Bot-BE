@@ -4,10 +4,13 @@ import { ICommand } from '../interfaces/ICommand';
 import { ConfigDB } from '../dbInteractions/ConfigDB';
 import { MongoDB } from '../db';
 import { logger } from '../logger/pino';
+import { EventsDB } from '../dbInteractions/EventsDB';
 
 export class CustomClient extends Client {
     commands: Collection<string, ICommand>;
     config!: ConfigDB;
+    events!: EventsDB;
+
     constructor(options: ClientOptions) {
         super(options);
 
@@ -25,6 +28,9 @@ export class CustomClient extends Client {
             await db.connect();
             this.config = new ConfigDB(db.connection!);
             await this.config.loadConfig();
+
+            this.events = new EventsDB(db.connection!);
+            await this.events.loadEvents();
         } catch (e) {
             logger.error(e);
         }
