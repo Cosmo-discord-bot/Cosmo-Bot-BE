@@ -218,6 +218,6 @@ export class EventHandler {
      */
 }
 
-function createTaggableStringFromIds(ids: string[], isRole: boolean = false): string {
+function createTaggableStringFromIds(ids: string[]): string {
     return ids.map(id => `<@&${id}>`).join(' ');
 }
