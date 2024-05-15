@@ -2,9 +2,7 @@ import 'dotenv/config';
 import { generateFirstConfig } from './startup/init';
 import { logger } from './logger/pino';
 import {
-    Collection,
     Events,
-    FetchGuildScheduledEventSubscribersOptions,
     GatewayIntentBits,
     Guild,
     GuildScheduledEvent,
@@ -19,8 +17,6 @@ import { IConfig } from './interfaces/IConfig';
 import { EventHandler } from './commands/EventHandler';
 import { IEventHandler } from './interfaces/IEventHandler';
 import { EventsHelper } from './helper/EventsHelper';
-import { ICategorizedEvents } from './interfaces/ICategorizedEvents';
-import { IEvent } from './interfaces/IEvent';
 
 const client: CustomClient = new CustomClient({
     intents: [
@@ -57,59 +53,29 @@ client.once(Events.ClientReady, (): void => {
                 await client.config.insertNewConfig(await generateFirstConfig(guild));
             }
             // Create event handlers for all guilds
-            logger.debug(`Events - ${gID} ${guild.name} `);
-            eventHandlers[gID] = new EventHandler(client, gID);
-            let events: Collection<string, GuildScheduledEvent> = await guild.scheduledEvents.fetch();
-
-            const discordEvents: GuildScheduledEvent[] = EventsHelper.splitEventsByGuild(events, gID);
-            const dbEvents: IEvent[] = [...client.events.events.values()].filter(event => event.guildId === gID);
-
-            const categorizedEvents: ICategorizedEvents = EventsHelper.categorizeEvents(discordEvents, dbEvents);
-
-            logger.debug(categorizedEvents);
-
-            // Create missing events
-            for (const event of categorizedEvents.create) {
-                await eventHandlers[gID].createEvent(event);
-            }
-
-            // Update events and roles for existing events
-
-            for (const event of categorizedEvents.update) {
-                eventHandlers[gID].updateEvent(event, event);
-                // Handle role subscribers
-                let options: FetchGuildScheduledEventSubscribersOptions = {
-                    withMember: true,
-                };
-                // TODO - Remove role from all subscribers and re-add them
-                event.fetchSubscribers(options).then(subscribers => {
-                    subscribers.forEach(subscriber => {
-                        eventHandlers[gID].addUserToEvent(event, subscriber.user);
-                    });
-                });
-            }
-
-            // Fetch and update roles
-            // Update role name and channel name
-
-            // Delete events
-            for (const event of categorizedEvents.delete) {
-                eventHandlers[gID].deleteEvent(event);
-            }
+            await EventsHelper.__init__(eventHandlers, guild, client);
         }
         await client.config.loadConfig();
+        logger.info('Initialization complete!');
     });
 });
 client.on(Events.MessageCreate, message => router(message, client.config.configs));
 client.on(Events.InteractionCreate, async interaction => HandleSlashCommands(interaction));
 client.on(Events.GuildCreate, async guild => {
-    const conf: IConfig = await generateFirstConfig(guild);
-    /*
-      TODO - Add a check to see if the guild already exists in the database
-      TODO - Create new EventHandler
+    try {
+        if (!guild.available) {
+            throw new Error('Guild not available');
+        }
+        const conf: IConfig = await generateFirstConfig(guild);
+        /*
+      TODO - Check to see if the guild already exists in the database
     */
-    await client.config.insertNewConfig(conf);
-    client.config?.loadConfig();
+        eventHandlers[guild.id] = new EventHandler(client, guild.id);
+        await client.config.insertNewConfig(conf);
+        client.config?.loadConfig();
+    } catch (e) {
+        logger.error('GuildCreate: ' + e);
+    }
 });
 client.on(Events.GuildScheduledEventCreate, async (event: GuildScheduledEvent) => {
     try {
