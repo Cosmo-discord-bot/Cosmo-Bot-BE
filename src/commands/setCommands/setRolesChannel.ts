@@ -1,7 +1,6 @@
-import { CommandInteraction, GuildBasedChannel, Message, SlashCommandBuilder } from 'discord.js';
-import { Command } from '../../interfaces/Command';
+import { GuildBasedChannel, Message } from 'discord.js';
 import { logger } from '../../logger/pino';
-import { ConfigModel } from '../../interfaces/ConfigModel';
+import { IConfig } from '../../interfaces/IConfig';
 import { getSecondArgumentFromText } from '../../helper/getSecondArgumentFromText';
 
 export const setRolesChannel = (message: Message): void => {
@@ -17,14 +16,14 @@ export const setRolesChannel = (message: Message): void => {
             throw new Error(`setRolesChannel: invalid channel id`);
         }
 
-        const config: ConfigModel = message.client.config.configs.find(
-            (config: ConfigModel): boolean => config.guildId === message.guildId
+        const config: IConfig = message.client.config.configs.find(
+            (config: IConfig): boolean => config.guildId === message.guildId
         )!;
 
         const channel: GuildBasedChannel | null = message.guild!.channels.resolve(rolesChannel);
         if (!channel) throw new Error('setRolesChannel: channel id does not exist');
 
-        config.rolesChannel = rolesChannel;
+        config.rolesChannelId = rolesChannel;
         message.client.config.updateConfig(config).then(() => message.client.config.loadConfig());
         message.reply(`setRolesChannel: Changed to <#${rolesChannel}>`);
     } catch (error) {

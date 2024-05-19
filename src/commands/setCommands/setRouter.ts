@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 import { getSecondArgumentFromText } from '../../helper/getSecondArgumentFromText';
-import { SetEnum } from '../../enums/setEnum';
+import { SetEnum } from '../../enums/SetEnum';
 import { setMainChannel } from './setMainChannel';
 import { setPrefix } from './setPrefix';
 import { logger } from '../../logger/pino';
