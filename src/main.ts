@@ -67,9 +67,9 @@ client.on(Events.GuildCreate, async guild => {
             throw new Error('Guild not available');
         }
         const conf: IConfig = await generateFirstConfig(guild);
-        /*
-      TODO - Check to see if the guild already exists in the database
-    */
+        if (client.config.configs.get(guild.id) != null) {
+            throw new Error('Guild already exists');
+        }
         eventHandlers[guild.id] = new EventHandler(client, guild.id);
         await client.config.insertNewConfig(conf);
         client.config?.loadConfig();
