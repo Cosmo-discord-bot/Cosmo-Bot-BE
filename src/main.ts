@@ -114,7 +114,6 @@ client.on(Events.GuildScheduledEventUserAdd, (event: GuildScheduledEvent | Parti
         logger.error('GuildScheduledEventUserAdd: ' + e);
     }
 });
-
 client.on(
     Events.GuildScheduledEventUserRemove,
     (event: GuildScheduledEvent | PartialGuildScheduledEvent, user: User) => {
@@ -125,5 +124,46 @@ client.on(
         }
     }
 );
+
+client.on(Events.VoiceStateUpdate, (oldState, newState) => {
+    try {
+        if (oldState.channelId === newState.channelId) {
+            return;
+        }
+        if (newState.channelId == null) {
+            client.voiceStates.onLeaveUpdateVoiceActivity(newState.guild.id, newState.member!.id, oldState.channelId!);
+        } else if (oldState.channelId == null) {
+            client.voiceStates.insertVoiceActivity(newState.guild.id, {
+                tsJoin: Date.now(),
+                tsLeave: -1,
+                userId: newState.member!.id,
+                channelId: newState.channelId,
+                active: true,
+            });
+            logger.debug(
+                'VoiceStateUpdate: ' +
+                    JSON.stringify({
+                        guildId: newState.guild.id,
+                        tsJoin: Date.now(),
+                        tsLeave: -1,
+                        userId: newState.member!.id,
+                        channelId: newState.channelId,
+                        active: true,
+                    })
+            );
+        } else {
+            client.voiceStates.onLeaveUpdateVoiceActivity(oldState.guild.id, oldState.member!.id, oldState.channelId!);
+            client.voiceStates.insertVoiceActivity(newState.guild.id, {
+                tsJoin: Date.now(),
+                tsLeave: -1,
+                userId: newState.member!.id,
+                channelId: newState.channelId,
+                active: true,
+            });
+        }
+    } catch (e) {
+        logger.error('VoiceStateUpdate: ' + e);
+    }
+});
 
 client.login(process.env.DISCORD_TOKEN);

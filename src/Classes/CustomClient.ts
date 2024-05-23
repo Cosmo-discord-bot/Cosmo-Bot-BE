@@ -5,11 +5,13 @@ import { ConfigDB } from '../dbInteractions/ConfigDB';
 import { MongoDB } from '../db';
 import { logger } from '../logger/pino';
 import { EventsDB } from '../dbInteractions/EventsDB';
+import { VoiceActivityDB } from '../dbInteractions/VoiceActivityDB';
 
 export class CustomClient extends Client {
     commands: Collection<string, ICommand>;
     config!: ConfigDB;
     events!: EventsDB;
+    voiceStates!: VoiceActivityDB;
 
     constructor(options: ClientOptions) {
         super(options);
@@ -31,6 +33,8 @@ export class CustomClient extends Client {
 
             this.events = new EventsDB(db.connection!);
             await this.events.loadEvents();
+
+            this.voiceStates = new VoiceActivityDB(db.connection!);
         } catch (e) {
             logger.error(e);
         }
