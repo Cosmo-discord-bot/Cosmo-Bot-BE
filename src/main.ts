@@ -9,6 +9,7 @@ import {
     PartialGuildScheduledEvent,
     Partials,
     User,
+    VoiceState,
 } from 'discord.js';
 import { router } from './router';
 import { HandleSlashCommands } from './slash-commands/set-slash-commands';
@@ -17,6 +18,7 @@ import { IConfig } from './interfaces/IConfig';
 import { EventHandler } from './commands/EventHandler';
 import { IEventHandler } from './interfaces/IEventHandler';
 import { EventsHelper } from './helper/EventsHelper';
+import { IMessageActivity } from './interfaces/IMessageActivity';
 
 const client: CustomClient = new CustomClient({
     intents: [
@@ -59,7 +61,15 @@ client.once(Events.ClientReady, (): void => {
         logger.info('Initialization complete!');
     });
 });
-client.on(Events.MessageCreate, message => router(message, client.config.configs));
+client.on(Events.MessageCreate, message => {
+    if (message.author.bot) return;
+    client.statisticsWrapper.messageActivity.insertMessageActivity(message.guild!.id, {
+        ts: Date.now(),
+        channelId: message.channel.id,
+        userId: message.author.id,
+    } as IMessageActivity);
+    router(message, client.config.configs);
+});
 client.on(Events.InteractionCreate, async interaction => HandleSlashCommands(interaction));
 client.on(Events.GuildCreate, async guild => {
     try {
