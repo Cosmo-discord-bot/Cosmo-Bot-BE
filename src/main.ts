@@ -135,15 +135,19 @@ client.on(
     }
 );
 
-client.on(Events.VoiceStateUpdate, (oldState, newState) => {
+client.on(Events.VoiceStateUpdate, (oldState: VoiceState, newState: VoiceState) => {
     try {
         if (oldState.channelId === newState.channelId) {
             return;
         }
         if (newState.channelId == null) {
-            client.voiceStates.onLeaveUpdateVoiceActivity(newState.guild.id, newState.member!.id, oldState.channelId!);
+            client.statisticsWrapper.voiceActivity.onLeaveUpdateVoiceActivity(
+                newState.guild.id,
+                newState.member!.id,
+                oldState.channelId!
+            );
         } else if (oldState.channelId == null) {
-            client.voiceStates.insertVoiceActivity(newState.guild.id, {
+            client.statisticsWrapper.voiceActivity.insertVoiceActivity(newState.guild.id, {
                 tsJoin: Date.now(),
                 tsLeave: -1,
                 userId: newState.member!.id,
@@ -162,8 +166,12 @@ client.on(Events.VoiceStateUpdate, (oldState, newState) => {
                     })
             );
         } else {
-            client.voiceStates.onLeaveUpdateVoiceActivity(oldState.guild.id, oldState.member!.id, oldState.channelId!);
-            client.voiceStates.insertVoiceActivity(newState.guild.id, {
+            client.statisticsWrapper.voiceActivity.onLeaveUpdateVoiceActivity(
+                oldState.guild.id,
+                oldState.member!.id,
+                oldState.channelId!
+            );
+            client.statisticsWrapper.voiceActivity.insertVoiceActivity(newState.guild.id, {
                 tsJoin: Date.now(),
                 tsLeave: -1,
                 userId: newState.member!.id,
