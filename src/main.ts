@@ -9,6 +9,7 @@ import {
     PartialGuildScheduledEvent,
     Partials,
     User,
+    VoiceState,
 } from 'discord.js';
 import { router } from './router';
 import { HandleSlashCommands } from './slash-commands/set-slash-commands';
@@ -17,6 +18,7 @@ import { IConfig } from './interfaces/IConfig';
 import { EventHandler } from './commands/EventHandler';
 import { IEventHandler } from './interfaces/IEventHandler';
 import { EventsHelper } from './helper/EventsHelper';
+import { IMessageActivity } from './interfaces/IMessageActivity';
 
 const client: CustomClient = new CustomClient({
     intents: [
@@ -59,7 +61,15 @@ client.once(Events.ClientReady, (): void => {
         logger.info('Initialization complete!');
     });
 });
-client.on(Events.MessageCreate, message => router(message, client.config.configs));
+client.on(Events.MessageCreate, message => {
+    if (message.author.bot) return;
+    client.statisticsWrapper.messageActivity.insertMessageActivity(message.guild!.id, {
+        ts: Date.now(),
+        channelId: message.channel.id,
+        userId: message.author.id,
+    } as IMessageActivity);
+    router(message, client.config.configs);
+});
 client.on(Events.InteractionCreate, async interaction => HandleSlashCommands(interaction));
 client.on(Events.GuildCreate, async guild => {
     try {
@@ -114,7 +124,6 @@ client.on(Events.GuildScheduledEventUserAdd, (event: GuildScheduledEvent | Parti
         logger.error('GuildScheduledEventUserAdd: ' + e);
     }
 });
-
 client.on(
     Events.GuildScheduledEventUserRemove,
     (event: GuildScheduledEvent | PartialGuildScheduledEvent, user: User) => {
@@ -125,5 +134,77 @@ client.on(
         }
     }
 );
+
+client.on(Events.VoiceStateUpdate, (oldState: VoiceState, newState: VoiceState) => {
+    try {
+        if (oldState.channelId === newState.channelId) {
+            return;
+        }
+        if (newState.channelId == null) {
+            client.statisticsWrapper.voiceActivity.onLeaveUpdateVoiceActivity(
+                newState.guild.id,
+                newState.member!.id,
+                oldState.channelId!
+            );
+        } else if (oldState.channelId == null) {
+            client.statisticsWrapper.voiceActivity.insertVoiceActivity(newState.guild.id, {
+                tsJoin: Date.now(),
+                tsLeave: -1,
+                userId: newState.member!.id,
+                channelId: newState.channelId,
+                active: true,
+            });
+            logger.debug(
+                'VoiceStateUpdate: ' +
+                    JSON.stringify({
+                        guildId: newState.guild.id,
+                        tsJoin: Date.now(),
+                        tsLeave: -1,
+                        userId: newState.member!.id,
+                        channelId: newState.channelId,
+                        active: true,
+                    })
+            );
+        } else {
+            client.statisticsWrapper.voiceActivity.onLeaveUpdateVoiceActivity(
+                oldState.guild.id,
+                oldState.member!.id,
+                oldState.channelId!
+            );
+            client.statisticsWrapper.voiceActivity.insertVoiceActivity(newState.guild.id, {
+                tsJoin: Date.now(),
+                tsLeave: -1,
+                userId: newState.member!.id,
+                channelId: newState.channelId,
+                active: true,
+            });
+        }
+    } catch (e) {
+        logger.error('VoiceStateUpdate: ' + e);
+    }
+});
+
+client.on(Events.ChannelCreate || Events.ChannelDelete, async channel => {
+    try {
+        if (!channel.guild) {
+            throw new Error('Guild not found');
+        }
+        if (!eventHandlers[channel.guild.id]) {
+            throw new Error('Guild not found');
+        }
+
+        await client.statisticsWrapper.channelActivity.insertChannelActivity({
+            name: channel.name,
+            timestamp: new Date(),
+            metadata: {
+                guildId: channel.guild.id,
+                channelId: channel.id,
+                type: Events.ChannelCreate ? 'ADDITION' : 'REMOVAL',
+            },
+        });
+    } catch (e) {
+        logger.error('ChannelCreate/Delete: ' + e);
+    }
+});
 
 client.login(process.env.DISCORD_TOKEN);

@@ -1,16 +1,16 @@
-import mongoose, { Connection } from 'mongoose';
 import { IEvent } from '../interfaces/IEvent';
 import { logger } from '../logger/pino';
+import { Connection, Model, Schema, UpdateWriteOpResult } from 'mongoose';
 
 export class EventsDB {
-    private readonly model: mongoose.Model<IEvent>;
+    private readonly model: Model<IEvent>;
     private readonly collection: string = 'Events';
     private connection: Connection;
     public events: Map<string, IEvent>;
 
     constructor(connection: Connection) {
         this.connection = connection;
-        const eventSchema: mongoose.Schema<IEvent> = new mongoose.Schema<IEvent>({
+        const eventSchema: Schema<IEvent> = new Schema<IEvent>({
             eventName: { type: String, required: true },
             guildId: { type: String, required: true },
             eventsCategoryId: { type: String, required: true },
@@ -39,10 +39,7 @@ export class EventsDB {
 
     public async updateEvents(event: IEvent): Promise<void> {
         try {
-            let response: mongoose.UpdateWriteOpResult = await this.model.replaceOne(
-                { eventId: event.eventId },
-                event
-            );
+            let response: UpdateWriteOpResult = await this.model.replaceOne({ eventId: event.eventId }, event);
             if (!response.acknowledged) throw new Error('updateConfig: Config updating failed');
         } catch (error) {
             logger.error(`updateConfig: Config updating failed - ${event.guildId}`);
