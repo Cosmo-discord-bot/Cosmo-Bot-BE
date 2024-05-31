@@ -1,30 +1,32 @@
 import mongoose, { Connection } from 'mongoose';
 import { logger } from '../logger/pino';
-import { IGuildMessageActivity, IMessageActivity } from '../interfaces/IMessageActivity';
-import { guildMessageActivitySchema } from '../schemas/MessageActivitySchema';
+import { IGuildChannelActivity } from '../interfaces/IChannelActivity';
+import { guildChannelActivitySchema } from '../schemas/ChannelsActivitySchema';
 
-export class MessageActivityDB {
-    private model: mongoose.Model<IGuildMessageActivity>;
-    private readonly collection: string = 'GuildMessageActivities';
+export class ChannelActivityDB {
+    private model: mongoose.Model<IGuildChannelActivity>;
+    private readonly collection: string = 'GuildChannelActivities';
     private connection: Connection;
 
     constructor(connection: Connection) {
         this.connection = connection;
-        this.model = this.connection.model<IGuildMessageActivity>(
+        this.model = this.connection.model<IGuildChannelActivity>(
             this.collection,
-            guildMessageActivitySchema,
+            guildChannelActivitySchema,
             this.collection
         );
     }
 
-    public async insertMessageActivity(guildId: string, messageActivity: IMessageActivity): Promise<void> {
+    public async insertChannelActivity(channelActivity: IGuildChannelActivity): Promise<void> {
         try {
-            await this.model.updateOne({ guildId }, { $push: { activities: messageActivity } }, { upsert: true });
-            logger.info(
-                `insertMessageActivity: Message activity inserted - ${guildId} - ${messageActivity.userId} - ${messageActivity.channelId}`
-            );
+            await this.model.create(channelActivity);
+            logger.info(`insertChannelActivity: Message activity inserted - ${JSON.stringify(channelActivity)}`);
         } catch (error) {
-            logger.error(`insertMessageActivity: Error inserting Message activity - ${guildId}, Error: ${error}`);
+            logger.error(
+                `insertChannelActivity: Error inserting Message activity - ${JSON.stringify(
+                    channelActivity
+                )}, Error: ${error}`
+            );
         }
     }
 

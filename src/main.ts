@@ -184,4 +184,27 @@ client.on(Events.VoiceStateUpdate, (oldState: VoiceState, newState: VoiceState) 
     }
 });
 
+client.on(Events.ChannelCreate || Events.ChannelDelete, async channel => {
+    try {
+        if (!channel.guild) {
+            throw new Error('Guild not found');
+        }
+        if (!eventHandlers[channel.guild.id]) {
+            throw new Error('Guild not found');
+        }
+
+        await client.statisticsWrapper.channelActivity.insertChannelActivity({
+            name: channel.name,
+            timestamp: new Date(),
+            metadata: {
+                guildId: channel.guild.id,
+                channelId: channel.id,
+                type: Events.ChannelCreate ? 'ADDITION' : 'REMOVAL',
+            },
+        });
+    } catch (e) {
+        logger.error('ChannelCreate/Delete: ' + e);
+    }
+});
+
 client.login(process.env.DISCORD_TOKEN);
