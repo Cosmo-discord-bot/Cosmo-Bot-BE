@@ -2,7 +2,7 @@ import { Client, Collection, FetchGuildScheduledEventSubscribersOptions, Guild, 
 import { ICategorizedEvents } from '../interfaces/ICategorizedEvents';
 import { IEvent } from '../interfaces/IEvent';
 import { logger } from '../logger/pino';
-import { EventHandler } from '../commands/EventHandler';
+import { EventHandler } from '../features/EventHandler';
 import { IEventHandler } from '../interfaces/IEventHandler';
 
 export class EventsHelper {

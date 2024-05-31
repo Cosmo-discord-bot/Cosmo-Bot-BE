@@ -15,7 +15,7 @@ import { router } from './router';
 import { HandleSlashCommands } from './slash-commands/set-slash-commands';
 import { CustomClient } from './Classes/CustomClient';
 import { IConfig } from './interfaces/IConfig';
-import { EventHandler } from './commands/EventHandler';
+import { EventHandler } from './features/EventHandler';
 import { IEventHandler } from './interfaces/IEventHandler';
 import { EventsHelper } from './helper/EventsHelper';
 import { IMessageActivity } from './interfaces/IMessageActivity';
