@@ -1,16 +1,15 @@
 import { GuildBasedChannel, Message } from 'discord.js';
 import { logger } from '../../logger/pino';
 import { IConfig } from '../../interfaces/IConfig';
-import { getSecondArgumentFromText } from '../../helper/getSecondArgumentFromText';
+import { Common } from '../../helper/Common';
 
 export const setRolesChannel = (message: Message): void => {
     const snowflakeMatch: RegExp = new RegExp('^\\d{17,19}$');
     try {
-        const messageArguments: RegExpMatchArray | null =
-            message.content.match('(?:\\S+\\s+)([\\s\\S]+)');
+        const messageArguments: RegExpMatchArray | null = message.content.match('(?:\\S+\\s+)([\\s\\S]+)');
         if (!messageArguments) throw new Error('setRolesChannel: No arguments');
 
-        const rolesChannel: string = getSecondArgumentFromText(messageArguments[1]);
+        const rolesChannel: string = Common.getSecondArgumentFromText(messageArguments[1]);
 
         if (!snowflakeMatch.test(rolesChannel)) {
             throw new Error(`setRolesChannel: invalid channel id`);

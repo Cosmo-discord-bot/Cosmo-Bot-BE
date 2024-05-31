@@ -1,16 +1,15 @@
 import { GuildBasedChannel, Message } from 'discord.js';
 import { logger } from '../../logger/pino';
 import { IConfig } from '../../interfaces/IConfig';
-import { getSecondArgumentFromText } from '../../helper/getSecondArgumentFromText';
+import { Common } from '../../helper/Common';
 
 export const setMainChannel = (message: Message): void => {
     const mainChannelRegex: RegExp = new RegExp('^\\d{17,19}$');
     try {
-        const messageArguments: RegExpMatchArray | null =
-            message.content.match('(?:\\S+\\s+)([\\s\\S]+)');
+        const messageArguments: RegExpMatchArray | null = message.content.match('(?:\\S+\\s+)([\\s\\S]+)');
         if (!messageArguments) throw new Error('setMainChannel: No arguments');
 
-        const mainChannel: string = getSecondArgumentFromText(messageArguments[1]);
+        const mainChannel: string = Common.getSecondArgumentFromText(messageArguments[1]);
 
         if (!mainChannelRegex.test(mainChannel)) {
             throw new Error(`setMainChannel: invalid channel id`);

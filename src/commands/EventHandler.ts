@@ -14,8 +14,9 @@ import {
     User,
 } from 'discord.js';
 import { logger } from '../logger/pino';
-import { sanitizeEventName } from '../helper/sanitizeNames';
 import { IEvent } from '../interfaces/IEvent';
+import { Common } from '../helper/Common';
+
 // TODO - Channels from ended events should be moved to Previous Events category
 // TODO - Check if channels should be threads
 export class EventHandler {
@@ -57,7 +58,7 @@ export class EventHandler {
                 event.guildId
             }`
         );
-        const sanitizedEventName: string = sanitizeEventName(event.name);
+        const sanitizedEventName: string = Common.sanitizeEventName(event.name);
         try {
             let createdRole = await this.guild.roles.create({
                 name: sanitizedEventName,
@@ -114,7 +115,7 @@ export class EventHandler {
             }
             let sanitizedEventName: string = '';
             if (newEvent.name) {
-                sanitizedEventName = sanitizeEventName(newEvent.name);
+                sanitizedEventName = Common.sanitizeEventName(newEvent.name);
                 if (foundEvent) {
                     this.guild.roles.cache.find(role => role.id === foundEvent.roleId)!.setName(sanitizedEventName);
                 }
@@ -330,7 +331,7 @@ export class EventHandler {
         if (!event.name) {
             throw new Error('Event name not found');
         }
-        const sanitizedEventName: string = sanitizeEventName(event.name);
+        const sanitizedEventName: string = Common.sanitizeEventName(event.name);
         const eventChannel = await this.guild.channels.create({
             name: sanitizedEventName,
             type: ChannelType.GuildText,

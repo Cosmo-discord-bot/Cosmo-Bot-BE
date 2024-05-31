@@ -1,14 +1,14 @@
 import { Message } from 'discord.js';
-import { getSecondArgumentFromText } from '../../helper/getSecondArgumentFromText';
 import { SetEnum } from '../../enums/SetEnum';
 import { setMainChannel } from './setMainChannel';
 import { setPrefix } from './setPrefix';
 import { logger } from '../../logger/pino';
 import { setRolesChannel } from './setRolesChannel';
+import { Common } from '../../helper/Common';
 
 export const setRouter = (message: Message): void => {
     try {
-        const setOption: string = getSecondArgumentFromText(message.content);
+        const setOption: string = Common.getSecondArgumentFromText(message.content);
 
         switch (setOption) {
             case SetEnum.Prefix:

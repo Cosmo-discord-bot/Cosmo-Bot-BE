@@ -2,16 +2,15 @@ import { CommandInteraction, Message, SlashCommandBuilder } from 'discord.js';
 import { ICommand } from '../../interfaces/ICommand';
 import { logger } from '../../logger/pino';
 import { IConfig } from '../../interfaces/IConfig';
-import { getSecondArgumentFromText } from '../../helper/getSecondArgumentFromText';
+import { Common } from '../../helper/Common';
 
 export const setPrefix = (message: Message): void => {
     const prefixRegex: RegExp = new RegExp('^[a-z!@#$%^&*()_+-=]{1,4}$');
     try {
-        const messageArguments: RegExpMatchArray | null =
-            message.content.match('(?:\\S+\\s+)([\\s\\S]+)');
+        const messageArguments: RegExpMatchArray | null = message.content.match('(?:\\S+\\s+)([\\s\\S]+)');
         if (!messageArguments) throw new Error('setPrefix: No arguments');
 
-        let newPrefix: string = getSecondArgumentFromText(messageArguments[1]);
+        let newPrefix: string = Common.getSecondArgumentFromText(messageArguments[1]);
 
         if (!prefixRegex.test(newPrefix)) {
             throw new Error(`setPrefix: Wrong prefix`);
