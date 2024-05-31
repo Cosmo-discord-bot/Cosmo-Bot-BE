@@ -1,6 +1,6 @@
 export class Common {
     public static sanitizeEventName(eventName: string): string {
-        const invalidCharsRegex = /[^a-zA-Z0-9_-\s]/g;
+        const invalidCharsRegex = /[^a-zA-Z0-9_\s]/g;
         let sanitizedEventName = eventName.replace(invalidCharsRegex, '');
         sanitizedEventName = sanitizedEventName.replace(/\s+/g, ' ');
         sanitizedEventName = sanitizedEventName.replace(/\s/g, '-');
