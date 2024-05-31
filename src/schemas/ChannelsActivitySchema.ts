@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { IGuildChannelActivity } from '../interfaces/IChannelActivity';
+import { IGuildChannelActivity } from '../interfaces/IStatistics/IChannelActivity';
 
 export const guildChannelActivitySchema: Schema<IGuildChannelActivity> = new Schema<IGuildChannelActivity>(
     {

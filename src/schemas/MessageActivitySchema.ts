@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { IGuildMessageActivity, IMessageActivity } from '../interfaces/IMessageActivity';
+import { IGuildMessageActivity, IMessageActivity } from '../interfaces/IStatistics/IMessageActivity';
 
 const messageActivitySchema: mongoose.Schema<IMessageActivity> = new mongoose.Schema<IMessageActivity>(
     {

@@ -14,7 +14,7 @@ import {
     User,
 } from 'discord.js';
 import { logger } from '../logger/pino';
-import { IEvent } from '../interfaces/IEvent';
+import { IEvent } from '../interfaces/IEvents/IEvent';
 import { Common } from '../helper/Common';
 
 // TODO - Channels from ended events should be moved to Previous Events category

@@ -1,6 +1,6 @@
 import mongoose, { Connection } from 'mongoose';
 import { logger } from '../logger/pino';
-import { IGuildChannelActivity } from '../interfaces/IChannelActivity';
+import { IGuildChannelActivity } from '../interfaces/IStatistics/IChannelActivity';
 import { guildChannelActivitySchema } from '../schemas/ChannelsActivitySchema';
 
 export class ChannelActivityDB {

@@ -1,6 +1,6 @@
 import mongoose, { Connection } from 'mongoose';
 import { logger } from '../logger/pino';
-import { IGuildMessageActivity, IMessageActivity } from '../interfaces/IMessageActivity';
+import { IGuildMessageActivity, IMessageActivity } from '../interfaces/IStatistics/IMessageActivity';
 import { guildMessageActivitySchema } from '../schemas/MessageActivitySchema';
 
 export class MessageActivityDB {
