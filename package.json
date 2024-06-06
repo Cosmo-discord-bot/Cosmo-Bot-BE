@@ -1,6 +1,6 @@
 {
   "name": "diplomskabot",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "Multi server discord bot",
   "main": "main.ts",
   "scripts": {
