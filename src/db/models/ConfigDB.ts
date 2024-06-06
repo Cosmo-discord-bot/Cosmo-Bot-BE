@@ -1,6 +1,6 @@
-import { IConfig } from '../interfaces/IConfig';
+import { IConfig } from '../../interfaces/common/IConfig';
 import mongoose, { Connection } from 'mongoose';
-import { logger } from '../logger/pino';
+import { logger } from '../../logger/pino';
 import { Collection } from 'discord.js';
 
 export class ConfigDB {

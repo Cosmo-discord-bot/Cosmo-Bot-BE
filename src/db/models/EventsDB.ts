@@ -1,5 +1,5 @@
-import { IEvent } from '../interfaces/IEvents/IEvent';
-import { logger } from '../logger/pino';
+import { IEvent } from '../../interfaces/events/IEvent';
+import { logger } from '../../logger/pino';
 import { Connection, Model, Schema, UpdateWriteOpResult } from 'mongoose';
 
 export class EventsDB {
