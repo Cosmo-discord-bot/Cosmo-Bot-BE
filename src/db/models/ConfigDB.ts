@@ -2,6 +2,7 @@ import { IConfig } from '../../interfaces/common/IConfig';
 import mongoose, { Connection } from 'mongoose';
 import { logger } from '../../logger/pino';
 import { Collection } from 'discord.js';
+import { configSchema } from '../schemas/ConfigSchema';
 
 export class ConfigDB {
     private readonly model: mongoose.Model<IConfig>;
@@ -11,14 +12,6 @@ export class ConfigDB {
 
     constructor(connection: Connection) {
         this.connection = connection;
-        const configSchema: mongoose.Schema<IConfig> = new mongoose.Schema<IConfig>({
-            guildId: { type: String, required: true },
-            prefix: { type: String, required: true },
-            color: { type: String, required: true },
-            mainChannelId: { type: String, required: true },
-            rolesChannelId: { type: String, required: true },
-            eventsGroupId: { type: String, required: true },
-        });
         this.model = this.connection.model<IConfig>(this.collection, configSchema, this.collection);
 
         this.configs = new Collection<string, IConfig>();

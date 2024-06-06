@@ -2,14 +2,14 @@ import { Client, Collection, FetchGuildScheduledEventSubscribersOptions, Guild, 
 import { ICategorizedEvents } from '../interfaces/events/ICategorizedEvents';
 import { IEvent } from '../interfaces/events/IEvent';
 import { logger } from '../logger/pino';
-import { EventHandler } from '../controllers/EventHandler';
+import { EventController } from '../controllers/EventController';
 import { IEventHandler } from '../interfaces/events/IEventHandler';
 
 export class EventsHelper {
     public static async __init__(eventHandlers: IEventHandler, guild: Guild, client: Client): Promise<void> {
         const gID: string = guild.id;
         logger.debug(`Events - ${gID} ${guild.name} `);
-        eventHandlers[gID] = new EventHandler(client, gID);
+        eventHandlers[gID] = new EventController(client, gID);
         let events: Collection<string, GuildScheduledEvent> = await guild.scheduledEvents.fetch();
 
         const discordEvents: GuildScheduledEvent[] = EventsHelper.splitEventsByGuild(events, gID);

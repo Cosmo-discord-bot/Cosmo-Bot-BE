@@ -19,7 +19,7 @@ import { Common } from '../helper/Common';
 
 // TODO - Channels from ended events should be moved to Previous Events category
 // TODO - Check if channels should be threads
-export class EventHandler {
+export class EventController {
     private guild: Guild;
     private client: Client;
     private eventsCategory: CategoryChannel;

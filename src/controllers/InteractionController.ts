@@ -1,6 +1,6 @@
 import { Interaction } from 'discord.js';
 
-export const handleCommands = async (interaction: Interaction): Promise<void> => {
+export const interactionController = async (interaction: Interaction): Promise<void> => {
     if (!interaction.isChatInputCommand()) return;
 
     const command = interaction.client.commands.get(interaction.commandName);

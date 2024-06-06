@@ -1,6 +1,7 @@
 import { IEvent } from '../../interfaces/events/IEvent';
 import { logger } from '../../logger/pino';
-import { Connection, Model, Schema, UpdateWriteOpResult } from 'mongoose';
+import { Connection, Model, UpdateWriteOpResult } from 'mongoose';
+import { eventSchema } from '../schemas/EventsSchema';
 
 export class EventsDB {
     private readonly model: Model<IEvent>;
@@ -10,14 +11,7 @@ export class EventsDB {
 
     constructor(connection: Connection) {
         this.connection = connection;
-        const eventSchema: Schema<IEvent> = new Schema<IEvent>({
-            eventName: { type: String, required: true },
-            guildId: { type: String, required: true },
-            eventsCategoryId: { type: String, required: true },
-            eventId: { type: String, required: true },
-            roleId: { type: String, required: true },
-            channelId: { type: String, required: true },
-        });
+
         this.model = this.connection.model<IEvent>(this.collection, eventSchema, this.collection);
 
         this.events = new Map<string, IEvent>();

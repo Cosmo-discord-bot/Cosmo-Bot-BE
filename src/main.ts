@@ -12,10 +12,10 @@ import {
     VoiceState,
 } from 'discord.js';
 //import { router } from './router';
-import { handleCommands } from './controllers/handleCommands';
+import { interactionController } from './controllers/InteractionController';
 import { CustomClient } from './Classes/CustomClient';
 import { IConfig } from './interfaces/common/IConfig';
-import { EventHandler } from './controllers/EventHandler';
+import { EventController } from './controllers/EventController';
 import { IEventHandler } from './interfaces/events/IEventHandler';
 import { EventsHelper } from './helper/EventsHelper';
 import { IMessageActivity } from './interfaces/statistics/IMessageActivity';
@@ -75,7 +75,7 @@ client.on(Events.MessageCreate, async message => {
     // Route message to correct handler
     //router(message, client.config.configs);
 });
-client.on(Events.InteractionCreate, async interaction => handleCommands(interaction));
+client.on(Events.InteractionCreate, async interaction => interactionController(interaction));
 client.on(Events.GuildCreate, async guild => {
     try {
         if (!guild.available) {
@@ -85,7 +85,7 @@ client.on(Events.GuildCreate, async guild => {
         if (client.config.configs.get(guild.id) != null) {
             throw new Error('Guild already exists');
         }
-        eventHandlers[guild.id] = new EventHandler(client, guild.id);
+        eventHandlers[guild.id] = new EventController(client, guild.id);
         await client.config.insertNewConfig(conf);
         client.config?.loadConfig();
     } catch (e) {

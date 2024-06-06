@@ -1,5 +1,5 @@
-import { EventHandler } from '../../controllers/EventHandler';
+import { EventController } from '../../controllers/EventController';
 
 export interface IEventHandler {
-    [guildId: string]: EventHandler;
+    [guildId: string]: EventController;
 }
