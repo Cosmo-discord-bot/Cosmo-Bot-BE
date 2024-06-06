@@ -11,7 +11,7 @@ import {
     User,
     VoiceState,
 } from 'discord.js';
-import { router } from './router';
+//import { router } from './router';
 import { handleCommands } from './controllers/handleCommands';
 import { CustomClient } from './Classes/CustomClient';
 import { IConfig } from './interfaces/common/IConfig';
@@ -35,6 +35,8 @@ const client: CustomClient = new CustomClient({
     ],
     partials: [Partials.GuildScheduledEvent, Partials.GuildMember],
 });
+
+client.player = new Player(client, {});
 
 const eventHandlers: IEventHandler = {};
 
@@ -71,7 +73,7 @@ client.on(Events.MessageCreate, async message => {
         userId: message.author.id,
     } as IMessageActivity);
     // Route message to correct handler
-    router(message, client.config.configs);
+    //router(message, client.config.configs);
 });
 client.on(Events.InteractionCreate, async interaction => handleCommands(interaction));
 client.on(Events.GuildCreate, async guild => {

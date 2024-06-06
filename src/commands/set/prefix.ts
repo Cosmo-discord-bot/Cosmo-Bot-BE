@@ -1,10 +1,10 @@
 import { CommandInteraction, Message, SlashCommandBuilder } from 'discord.js';
-import { ICommand } from '../../interfaces/ICommand';
+import { ICommand } from '../../interfaces/common/ICommand';
 import { logger } from '../../logger/pino';
-import { IConfig } from '../../interfaces/IConfig';
+import { IConfig } from '../../interfaces/common/IConfig';
 import { Common } from '../../helper/Common';
 
-export const setPrefix = (message: Message): void => {
+export const prefix = (message: Message): void => {
     const prefixRegex: RegExp = new RegExp('^[a-z!@#$%^&*()_+-=]{1,4}$');
     try {
         const messageArguments: RegExpMatchArray | null = message.content.match('(?:\\S+\\s+)([\\s\\S]+)');
