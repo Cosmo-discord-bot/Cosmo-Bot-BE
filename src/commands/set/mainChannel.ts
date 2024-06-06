@@ -1,9 +1,9 @@
 import { GuildBasedChannel, Message } from 'discord.js';
 import { logger } from '../../logger/pino';
-import { IConfig } from '../../interfaces/IConfig';
+import { IConfig } from '../../interfaces/common/IConfig';
 import { Common } from '../../helper/Common';
 
-export const setMainChannel = (message: Message): void => {
+export const mainChannel = (message: Message): void => {
     const mainChannelRegex: RegExp = new RegExp('^\\d{17,19}$');
     try {
         const messageArguments: RegExpMatchArray | null = message.content.match('(?:\\S+\\s+)([\\s\\S]+)');

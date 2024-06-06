@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { generateFirstConfig } from './startup/init';
+import { generateFirstConfig } from './helper/generateFirstConfig';
 import { logger } from './logger/pino';
 import {
     Events,
@@ -12,13 +12,14 @@ import {
     VoiceState,
 } from 'discord.js';
 import { router } from './router';
-import { HandleSlashCommands } from './slash-commands/set-slash-commands';
+import { handleCommands } from './controllers/handleCommands';
 import { CustomClient } from './Classes/CustomClient';
-import { IConfig } from './interfaces/IConfig';
-import { EventHandler } from './features/EventHandler';
-import { IEventHandler } from './interfaces/IEvents/IEventHandler';
+import { IConfig } from './interfaces/common/IConfig';
+import { EventHandler } from './controllers/EventHandler';
+import { IEventHandler } from './interfaces/events/IEventHandler';
 import { EventsHelper } from './helper/EventsHelper';
-import { IMessageActivity } from './interfaces/IStatistics/IMessageActivity';
+import { IMessageActivity } from './interfaces/statistics/IMessageActivity';
+import { Player } from 'discord-music-player';
 
 const client: CustomClient = new CustomClient({
     intents: [
@@ -61,16 +62,18 @@ client.once(Events.ClientReady, (): void => {
         logger.info('Initialization complete!');
     });
 });
-client.on(Events.MessageCreate, message => {
+client.on(Events.MessageCreate, async message => {
     if (message.author.bot) return;
-    client.statisticsWrapper.messageActivity.insertMessageActivity(message.guild!.id, {
+    // Insert message activity
+    await client.statisticsWrapper.messageActivity.insertMessageActivity(message.guild!.id, {
         ts: Date.now(),
         channelId: message.channel.id,
         userId: message.author.id,
     } as IMessageActivity);
+    // Route message to correct handler
     router(message, client.config.configs);
 });
-client.on(Events.InteractionCreate, async interaction => HandleSlashCommands(interaction));
+client.on(Events.InteractionCreate, async interaction => handleCommands(interaction));
 client.on(Events.GuildCreate, async guild => {
     try {
         if (!guild.available) {

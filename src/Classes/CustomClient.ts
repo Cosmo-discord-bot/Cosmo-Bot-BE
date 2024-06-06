@@ -1,11 +1,13 @@
-import { Client, ClientOptions, Collection } from 'discord.js';
-import { ping_slash } from '../commands/ping';
-import { ICommand } from '../interfaces/ICommand';
-import { ConfigDB } from '../dbInteractions/ConfigDB';
-import { MongoDB } from '../db';
+import { Client, ClientOptions, Collection, REST, Routes } from 'discord.js';
+import { ICommand } from '../interfaces/common/ICommand';
+import { ConfigDB } from '../db/models/ConfigDB';
+import { MongoDB } from '../db/DB';
 import { logger } from '../logger/pino';
-import { EventsDB } from '../dbInteractions/EventsDB';
+import { EventsDB } from '../db/models/EventsDB';
 import { StatisticsWrapper } from './StatisticsWrapper';
+import { Player } from 'discord-music-player';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 
 export class CustomClient extends Client {
     commands: Collection<string, ICommand>;

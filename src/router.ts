@@ -2,8 +2,8 @@ import { Collection, Message } from 'discord.js';
 import { logger } from './logger/pino';
 
 import { CommandsEnum } from './enums/CommandsEnum';
-import { IConfig } from './interfaces/IConfig';
-import * as commands from './commands';
+import { IConfig } from './interfaces/common/IConfig';
+import * as commands from './commands/common';
 
 export const router = (message: Message, guildConfigs: Collection<string, IConfig>): void => {
     let config: IConfig = guildConfigs.get(message.guildId!)!;

@@ -1,9 +1,9 @@
 import { Message } from 'discord.js';
 import { SetEnum } from '../../enums/SetEnum';
-import { setMainChannel } from './setMainChannel';
-import { setPrefix } from './setPrefix';
+import { mainChannel } from './mainChannel';
+import { prefix } from './prefix';
 import { logger } from '../../logger/pino';
-import { setRolesChannel } from './setRolesChannel';
+import { rolesChannel } from './rolesChannel';
 import { Common } from '../../helper/Common';
 
 export const setRouter = (message: Message): void => {
@@ -12,13 +12,13 @@ export const setRouter = (message: Message): void => {
 
         switch (setOption) {
             case SetEnum.Prefix:
-                setPrefix(message);
+                prefix(message);
                 break;
             case SetEnum.MainChannel:
-                setMainChannel(message);
+                mainChannel(message);
                 break;
             case SetEnum.RolesChannel:
-                setRolesChannel(message);
+                rolesChannel(message);
                 break;
             default:
                 throw new Error('setRouter: setting does not exist');
