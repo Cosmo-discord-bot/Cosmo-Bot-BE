@@ -1,12 +1,6 @@
-import { ping_slash } from '../commands/ping';
-import { CustomClient } from '../Classes/CustomClient';
 import { Interaction } from 'discord.js';
 
-export const SetSlashCommands = (client: CustomClient): void => {
-    client.commands.set(ping_slash.data.name, ping_slash);
-};
-
-export const HandleSlashCommands = async (interaction: Interaction): Promise<void> => {
+export const handleCommands = async (interaction: Interaction): Promise<void> => {
     if (!interaction.isChatInputCommand()) return;
 
     const command = interaction.client.commands.get(interaction.commandName);
