@@ -1,4 +1,4 @@
-import { GuildBasedChannel, Message } from 'discord.js';
+import { ApplicationCommandOptionType, GuildBasedChannel, Message } from 'discord.js';
 import { logger } from '../../logger/pino';
 import { IConfig } from '../../interfaces/common/IConfig';
 import { Common } from '../../helper/Common';
@@ -36,11 +36,22 @@ export const mainChannel = (message: Message): void => {
     }
 };
 
-/*
-export const prefix_slash: Command = {
-    data: new SlashCommandBuilder().setName('setMainChannel').setDescription('Change setMainChannel for commands'),
-    async execute(interaction: CommandInteraction) {
-        await interaction.reply('Pong!');
-    },
-};
-*/
+//const play: ICommand = {
+//    data: {
+//        name: 'set',
+//        description: 'Play music',
+//        option: [
+//            {
+//                name: 'song',
+//                description: 'The song you want to play',
+//                type: ApplicationCommandOptionType.String,
+//                required: true,
+//            },
+//        ],
+//    },
+//    execute: async (interaction: CommandInteraction) => {
+//        await interaction.reply('Playing!');
+//    },
+//};
+//
+//module.exports = play;

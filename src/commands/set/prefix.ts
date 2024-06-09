@@ -1,10 +1,10 @@
-import { CommandInteraction, Message, SlashCommandBuilder } from 'discord.js';
+import { ApplicationCommandOptionType, CommandInteraction, Message } from 'discord.js';
 import { ICommand } from '../../interfaces/common/ICommand';
 import { logger } from '../../logger/pino';
 import { IConfig } from '../../interfaces/common/IConfig';
 import { Common } from '../../helper/Common';
 
-export const prefix = (message: Message): void => {
+const prefix = (message: Message): void => {
     const prefixRegex: RegExp = new RegExp('^[a-z!@#$%^&*()_+-=]{1,4}$');
     try {
         const messageArguments: RegExpMatchArray | null = message.content.match('(?:\\S+\\s+)([\\s\\S]+)');
@@ -33,9 +33,49 @@ export const prefix = (message: Message): void => {
     }
 };
 
-export const prefix_slash: ICommand = {
-    data: new SlashCommandBuilder().setName('prefix').setDescription('Change prefix for commands'),
-    async execute(interaction: CommandInteraction) {
-        await interaction.reply('Pong!');
+const setPrefix: ICommand = {
+    data: {
+        name: 'setprefix',
+        description: 'Set the bot command prefix',
+        option: [
+            {
+                name: 'prefix',
+                description: 'The new prefix to set',
+                type: ApplicationCommandOptionType.String,
+                required: true,
+            },
+        ],
+    },
+    execute: async (interaction: CommandInteraction) => {
+        try {
+            // @ts-ignore
+            const prefix = interaction.options.getString('prefix');
+
+            const prefixRegex: RegExp = new RegExp('^[a-z!@#$%^&*()_+-=]{1,4}$');
+            if (!prefixRegex.test(prefix)) {
+                throw new Error(`Wrong prefix`);
+            }
+            const config: IConfig = interaction.client.config.configs.find(
+                (config: IConfig): boolean => config.guildId === interaction.guildId
+            )!;
+            config.prefix = prefix;
+            interaction.client.config.updateConfig(config).then(() => interaction.client.config.loadConfig());
+
+            await interaction.reply(`Prefix set to ${prefix}`);
+        } catch (error) {
+            if (error == 'Wrong prefix') {
+                await interaction.reply('setPrefix: Wrong prefix');
+                logger.error('setPrefix: Wrong prefix');
+                return;
+            } else if (error instanceof Error) {
+                logger.error(`${error.message}`);
+                await interaction.reply(error.message);
+                return;
+            }
+            await interaction.reply('setPrefix: Something went wrong - general error');
+            logger.error('setPrefix: Something went wrong - general error');
+        }
     },
 };
+
+module.exports = setPrefix;

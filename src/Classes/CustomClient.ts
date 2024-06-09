@@ -82,6 +82,5 @@ export class CustomClient extends Client {
                     console.log(err);
                 });
         }
-        //}
     }
 }
