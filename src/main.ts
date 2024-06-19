@@ -19,7 +19,6 @@ import { EventController } from './controllers/EventController';
 import { IEventHandler } from './interfaces/events/IEventHandler';
 import { EventsHelper } from './helper/EventsHelper';
 import { IMessageActivity } from './interfaces/statistics/IMessageActivity';
-import { Player } from 'discord-music-player';
 
 const client: CustomClient = new CustomClient({
     intents: [
@@ -35,8 +34,6 @@ const client: CustomClient = new CustomClient({
     ],
     partials: [Partials.GuildScheduledEvent, Partials.GuildMember],
 });
-
-client.player = new Player(client, {});
 
 const eventHandlers: IEventHandler = {};
 

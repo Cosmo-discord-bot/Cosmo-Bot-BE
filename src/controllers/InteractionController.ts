@@ -10,6 +10,14 @@ export const interactionController = async (interaction: Interaction): Promise<v
         return;
     }
 
+    if (interaction.isAutocomplete()) {
+        try {
+            await command.suggest(interaction);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     try {
         await command.execute(interaction);
     } catch (error) {

@@ -5,9 +5,10 @@ import { MongoDB } from '../db/DB';
 import { logger } from '../logger/pino';
 import { EventsDB } from '../db/models/EventsDB';
 import { StatisticsWrapper } from './StatisticsWrapper';
-import { Player } from 'discord-music-player';
+import { Player } from 'discord-player';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
+import { BaseEmbed } from '../helper/embeds';
 
 export class CustomClient extends Client {
     commands: Collection<string, ICommand>;
@@ -36,6 +37,25 @@ export class CustomClient extends Client {
 
             await this.loadCommands();
             this.registerCommand();
+
+            this.player = new Player(this);
+            await this.player.extractors.loadDefault();
+
+            this.player.events.on('playerStart', (queue, track) => {
+                if (!track.requestedBy) track.requestedBy = queue.player.client.user;
+
+                const embed = BaseEmbed()
+                    .setAuthor({ name: 'Now playing' })
+                    .setTitle(track.title)
+                    .setURL(track.url)
+                    .setThumbnail(track.thumbnail)
+                    .setFooter({
+                        text: `Played by: ${track.requestedBy?.tag}`,
+                        iconURL: track.requestedBy?.displayAvatarURL(),
+                    });
+
+                return queue.metadata.channel.send({ embeds: [embed] });
+            });
         } catch (e) {
             logger.error(e);
         }

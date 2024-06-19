@@ -7,5 +7,6 @@ export interface ICommand {
         autocomplete?: boolean;
         option?: ApplicationCommandOption[];
     };
+    suggest?(interaction: CommandInteraction): Promise<void>;
     execute(interaction: CommandInteraction): Promise<void>;
 }

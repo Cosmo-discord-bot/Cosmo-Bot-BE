@@ -7,7 +7,7 @@ import playerOptions from '../../config/playerOptions';
 
 const play: ICommand = {
     data: new SlashCommandBuilder()
-        .setName('play')
+        .setName('volume')
         .setDescription('Play music')
         .addStringOption(option =>
             option.setName('query').setDescription('The song you want to play').setRequired(true)
@@ -17,44 +17,12 @@ const play: ICommand = {
                 .setName('source')
                 .setDescription('The source to search from')
                 .addChoices([
-                    { name: 'YouTube', value: QueryType.YOUTUBE_SEARCH },
+                    { name: 'YouTube', value: QueryType.YOUTUBE },
                     { name: 'Spotify', value: QueryType.SPOTIFY_SEARCH },
                     { name: 'Auto', value: QueryType.AUTO_SEARCH },
                 ])
                 .setRequired(false)
         ),
-    /*
-    suggest(interaction: ChatInputCommandInteraction) {
-        const query = interaction.options.getString("query", false)?.trim();
-        if (!query) return;
-
-        const player = useMainPlayer();
-        const searchResult = await player.search(query).catch(() => null);
-        if (!searchResult) {
-            interaction.reply({embeds: [ErrorEmbed(`No results found for \`${query}\`.`)]});
-            return;
-        }
-
-        const tracks = searchResult.hasPlaylist()
-            ? searchResult.playlist.tracks.slice(0, 24)
-            : searchResult.tracks.slice(0, 10);
-
-        const formattedResult = tracks.map((track) => ({
-            name: track.title,
-            value: track.url,
-        }));
-
-        if (searchResult.hasPlaylist()) {
-            formattedResult.unshift({
-                name: `Playlist | ${searchResult.playlist.title}`,
-                value: searchResult.playlist.url,
-            });
-        }
-
-        return interaction.respond(formattedResult);
-    }
-     */
-
     execute: async (interaction: ChatInputCommandInteraction): Promise<void> => {
         if (!interaction.member || !(interaction.member instanceof GuildMember)) {
             await interaction.reply({
@@ -63,10 +31,10 @@ const play: ICommand = {
             });
             return;
         }
-        logger.info('testic');
+
         const query: string = interaction.options.getString('query', true);
         const searchEngine: SearchQueryType =
-            (interaction.options.getString('source', false) as SearchQueryType) ?? QueryType.YOUTUBE;
+            (interaction.options.getString('source', false) as SearchQueryType) ?? QueryType.AUTO_SEARCH;
         const player: Player = useMainPlayer();
 
         try {
@@ -102,7 +70,7 @@ const play: ICommand = {
                 iconURL: interaction.member.displayAvatarURL(),
             });
 
-            if (searchResult.hasPlaylist() && searchResult.playlist) {
+            if (searchResult.playlist) {
                 const playlist: Playlist = searchResult.playlist;
                 embed
                     .setAuthor({
@@ -111,6 +79,9 @@ const play: ICommand = {
                     .setTitle(playlist.title)
                     .setURL(playlist.url)
                     .setThumbnail(playlist.thumbnail);
+
+                queue.addTrack(searchResult.playlist);
+                queue.node.play();
             } else {
                 embed
                     .setAuthor({
@@ -119,8 +90,8 @@ const play: ICommand = {
                     .setTitle(track.title)
                     .setURL(track.url)
                     .setThumbnail(track.thumbnail);
+                queue.node.play(track);
             }
-            //queue.node.play();
 
             interaction.editReply({ embeds: [embed] }).catch(console.error);
         } catch (e) {
