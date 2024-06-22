@@ -1,4 +1,4 @@
-import {ApplicationCommandOption, AutocompleteInteraction, CommandInteraction} from 'discord.js';
+import { ApplicationCommandOption, AutocompleteInteraction, CommandInteraction } from 'discord.js';
 
 export interface ICommand {
     data: {

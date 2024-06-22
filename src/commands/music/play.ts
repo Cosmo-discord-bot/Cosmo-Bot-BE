@@ -1,14 +1,13 @@
 import {
     AutocompleteInteraction,
     ChatInputCommandInteraction,
-    GuildMember,
     SlashCommandBuilder,
-    VoiceBasedChannel
+    VoiceBasedChannel,
 } from 'discord.js';
 import { ICommand } from '../../interfaces/common/ICommand';
 import { logger } from '../../logger/pino';
-import { BaseEmbed, ErrorEmbed } from '../../helper/embeds';
-import { Player, Playlist, QueryType, SearchQueryType, useMainPlayer } from 'discord-player';
+import { ErrorEmbed } from '../../helper/embeds';
+import { Playlist, useMainPlayer } from 'discord-player';
 import playerOptions from '../../config/playerOptions';
 
 const play: ICommand = {
@@ -20,21 +19,22 @@ const play: ICommand = {
         ),
 
     async suggest(interaction: AutocompleteInteraction) {
-        const query = interaction.options.getString("query", false)?.trim();
+        const query = interaction.options.getString('query', false)?.trim();
         if (!query) return;
 
         const player = useMainPlayer();
         const searchResult = await player.search(query).catch(() => null);
-            await interaction.respond([{name: "No results found", value: ""}]);
+        await interaction.respond([{ name: 'No results found', value: '' }]);
         if (!searchResult) {
             return;
         }
 
-        const tracks = searchResult.hasPlaylist() && searchResult.playlist
-            ? searchResult.playlist.tracks.slice(0, 24)
-            : searchResult.tracks.slice(0, 10);
+        const tracks =
+            searchResult.hasPlaylist() && searchResult.playlist
+                ? searchResult.playlist.tracks.slice(0, 24)
+                : searchResult.tracks.slice(0, 10);
 
-        const formattedResult = tracks.map((track) => ({
+        const formattedResult = tracks.map(track => ({
             name: track.title,
             value: track.url,
         }));
@@ -48,7 +48,6 @@ const play: ICommand = {
 
         logger.info(formattedResult);
         return interaction.respond(formattedResult);
-
     },
     execute: async (interaction: ChatInputCommandInteraction) => {
         if (!interaction.inCachedGuild()) return;
@@ -64,9 +63,9 @@ const play: ICommand = {
         const queue = player.nodes.create(channel as VoiceBasedChannel, playerOptions);
 
         if (!result.hasTracks()) {
-            const embed = ErrorEmbed("No results found");
+            const embed = ErrorEmbed('No results found');
             interaction.editReply({ embeds: [embed] });
-            return
+            return;
         }
 
         if (result.hasPlaylist()) {
@@ -76,7 +75,7 @@ const play: ICommand = {
             queue.addTrack(result.tracks);
         }
         logger.info(queue);
-        queue.node.play()
+        queue.node.play();
     },
 };
 

@@ -8,7 +8,6 @@ import { StatisticsWrapper } from './StatisticsWrapper';
 import { Player } from 'discord-player';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { BaseEmbed } from '../helper/embeds';
 
 export class CustomClient extends Client {
     commands: Collection<string, ICommand>;
