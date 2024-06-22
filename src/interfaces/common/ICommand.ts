@@ -1,4 +1,4 @@
-import { ApplicationCommandOption, CommandInteraction } from 'discord.js';
+import {ApplicationCommandOption, AutocompleteInteraction, CommandInteraction} from 'discord.js';
 
 export interface ICommand {
     data: {
@@ -7,6 +7,6 @@ export interface ICommand {
         autocomplete?: boolean;
         option?: ApplicationCommandOption[];
     };
-    suggest?(interaction: CommandInteraction): Promise<void>;
+    suggest?(interaction: AutocompleteInteraction): Promise<void>;
     execute(interaction: CommandInteraction): Promise<void>;
 }

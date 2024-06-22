@@ -1,4 +1,10 @@
-import { ChatInputCommandInteraction, GuildMember, SlashCommandBuilder, VoiceBasedChannel } from 'discord.js';
+import {
+    AutocompleteInteraction,
+    ChatInputCommandInteraction,
+    GuildMember,
+    SlashCommandBuilder,
+    VoiceBasedChannel
+} from 'discord.js';
 import { ICommand } from '../../interfaces/common/ICommand';
 import { logger } from '../../logger/pino';
 import { BaseEmbed, ErrorEmbed } from '../../helper/embeds';
@@ -10,32 +16,21 @@ const play: ICommand = {
         .setName('play')
         .setDescription('Play music')
         .addStringOption(option =>
-            option.setName('query').setDescription('The song you want to play').setRequired(true)
-        )
-        .addStringOption(option =>
-            option
-                .setName('source')
-                .setDescription('The source to search from')
-                .addChoices([
-                    { name: 'YouTube', value: QueryType.YOUTUBE_SEARCH },
-                    { name: 'Spotify', value: QueryType.SPOTIFY_SEARCH },
-                    { name: 'Auto', value: QueryType.AUTO_SEARCH },
-                ])
-                .setRequired(false)
+            option.setName('query').setDescription('The song you want to play').setRequired(true).setAutocomplete(true)
         ),
-    /*
-    suggest(interaction: ChatInputCommandInteraction) {
+
+    async suggest(interaction: AutocompleteInteraction) {
         const query = interaction.options.getString("query", false)?.trim();
         if (!query) return;
 
         const player = useMainPlayer();
         const searchResult = await player.search(query).catch(() => null);
+            await interaction.respond([{name: "No results found", value: ""}]);
         if (!searchResult) {
-            interaction.reply({embeds: [ErrorEmbed(`No results found for \`${query}\`.`)]});
             return;
         }
 
-        const tracks = searchResult.hasPlaylist()
+        const tracks = searchResult.hasPlaylist() && searchResult.playlist
             ? searchResult.playlist.tracks.slice(0, 24)
             : searchResult.tracks.slice(0, 10);
 
@@ -44,92 +39,44 @@ const play: ICommand = {
             value: track.url,
         }));
 
-        if (searchResult.hasPlaylist()) {
+        if (searchResult.hasPlaylist() && searchResult.playlist) {
             formattedResult.unshift({
                 name: `Playlist | ${searchResult.playlist.title}`,
                 value: searchResult.playlist.url,
             });
         }
 
+        logger.info(formattedResult);
         return interaction.respond(formattedResult);
-    }
-     */
 
-    execute: async (interaction: ChatInputCommandInteraction): Promise<void> => {
-        if (!interaction.member || !(interaction.member instanceof GuildMember)) {
-            await interaction.reply({
-                content: 'This command can only be used within a server and by a member.',
-                ephemeral: true,
-            });
-            return;
+    },
+    execute: async (interaction: ChatInputCommandInteraction) => {
+        if (!interaction.inCachedGuild()) return;
+        const player = useMainPlayer();
+        const channel = interaction.member.voice.channel!;
+        const query = interaction.options.getString('query', true);
+
+        await interaction.deferReply();
+
+        const result = await player.search(query, {
+            requestedBy: interaction.user,
+        });
+        const queue = player.nodes.create(channel as VoiceBasedChannel, playerOptions);
+
+        if (!result.hasTracks()) {
+            const embed = ErrorEmbed("No results found");
+            interaction.editReply({ embeds: [embed] });
+            return
         }
-        logger.info('testic');
-        const query: string = interaction.options.getString('query', true);
-        const searchEngine: SearchQueryType =
-            (interaction.options.getString('source', false) as SearchQueryType) ?? QueryType.YOUTUBE;
-        const player: Player = useMainPlayer();
 
-        try {
-            await interaction.deferReply();
-            const channel: VoiceBasedChannel | null = interaction.member.voice.channel;
-            if (!channel) {
-                // make sure we have a voice channel
-                interaction.reply({ embeds: [ErrorEmbed('You need to be in a voice channel to play music!')] });
-                throw new Error('User not connected to a voice channel');
-            }
-
-            const result = await player.search(query, {
-                searchEngine,
-                requestedBy: interaction.user,
-            });
-
-            if (!result.hasTracks())
-                interaction.editReply({
-                    embeds: [ErrorEmbed(`No results found for \`${query}\`.`)],
-                });
-
-            const { queue, track, searchResult } = await player.play(channel, result, {
-                nodeOptions: {
-                    metadata: interaction,
-                    ...playerOptions,
-                },
-                requestedBy: interaction.user,
-                connectionOptions: { deaf: true },
-            });
-
-            const embed = BaseEmbed().setFooter({
-                text: `Requested by: ${interaction.user.tag}`,
-                iconURL: interaction.member.displayAvatarURL(),
-            });
-
-            if (searchResult.hasPlaylist() && searchResult.playlist) {
-                const playlist: Playlist = searchResult.playlist;
-                embed
-                    .setAuthor({
-                        name: `Playlist queued - ${playlist.tracks.length} tracks.`,
-                    })
-                    .setTitle(playlist.title)
-                    .setURL(playlist.url)
-                    .setThumbnail(playlist.thumbnail);
-            } else {
-                embed
-                    .setAuthor({
-                        name: `Track queued - Position ${queue.node.getTrackPosition(track) + 1}`,
-                    })
-                    .setTitle(track.title)
-                    .setURL(track.url)
-                    .setThumbnail(track.thumbnail);
-            }
-            //queue.node.play();
-
-            interaction.editReply({ embeds: [embed] }).catch(console.error);
-        } catch (e) {
-            // let's return error if something failed
-            logger.error(e);
-            interaction.editReply({
-                embeds: [ErrorEmbed(`Something went wrong while playing \`${query}\``)],
-            });
+        if (result.hasPlaylist()) {
+            const playlist = result.playlist as Playlist;
+            queue.addTrack(playlist);
+        } else {
+            queue.addTrack(result.tracks);
         }
+        logger.info(queue);
+        queue.node.play()
     },
 };
 
