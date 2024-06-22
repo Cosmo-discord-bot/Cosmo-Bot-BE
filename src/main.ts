@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { generateFirstConfig } from './startup/init';
+import { generateFirstConfig } from './helper/generateFirstConfig';
 import { logger } from './logger/pino';
 import {
     Events,
@@ -11,14 +11,14 @@ import {
     User,
     VoiceState,
 } from 'discord.js';
-import { router } from './router';
-import { HandleSlashCommands } from './slash-commands/set-slash-commands';
+//import { router } from './router';
+import { interactionController } from './controllers/InteractionController';
 import { CustomClient } from './Classes/CustomClient';
-import { IConfig } from './interfaces/IConfig';
-import { EventHandler } from './commands/EventHandler';
-import { IEventHandler } from './interfaces/IEventHandler';
+import { IConfig } from './interfaces/common/IConfig';
+import { EventController } from './controllers/EventController';
+import { IEventHandler } from './interfaces/events/IEventHandler';
 import { EventsHelper } from './helper/EventsHelper';
-import { IMessageActivity } from './interfaces/IMessageActivity';
+import { IMessageActivity } from './interfaces/statistics/IMessageActivity';
 
 const client: CustomClient = new CustomClient({
     intents: [
@@ -61,16 +61,18 @@ client.once(Events.ClientReady, (): void => {
         logger.info('Initialization complete!');
     });
 });
-client.on(Events.MessageCreate, message => {
+client.on(Events.MessageCreate, async message => {
     if (message.author.bot) return;
-    client.statisticsWrapper.messageActivity.insertMessageActivity(message.guild!.id, {
+    // Insert message activity
+    await client.statisticsWrapper.messageActivity.insertMessageActivity(message.guild!.id, {
         ts: Date.now(),
         channelId: message.channel.id,
         userId: message.author.id,
     } as IMessageActivity);
-    router(message, client.config.configs);
+    // Route message to correct handler
+    //router(message, client.config.configs);
 });
-client.on(Events.InteractionCreate, async interaction => HandleSlashCommands(interaction));
+client.on(Events.InteractionCreate, async interaction => interactionController(interaction));
 client.on(Events.GuildCreate, async guild => {
     try {
         if (!guild.available) {
@@ -80,7 +82,7 @@ client.on(Events.GuildCreate, async guild => {
         if (client.config.configs.get(guild.id) != null) {
             throw new Error('Guild already exists');
         }
-        eventHandlers[guild.id] = new EventHandler(client, guild.id);
+        eventHandlers[guild.id] = new EventController(client, guild.id);
         await client.config.insertNewConfig(conf);
         client.config?.loadConfig();
     } catch (e) {

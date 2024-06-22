@@ -1,1 +1,0 @@
-export { MongoDB } from "./DB";

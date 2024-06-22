@@ -1,6 +1,6 @@
 {
   "name": "diplomskabot",
-  "version": "0.0.8",
+  "version": "0.2.2",
   "description": "Multi server discord bot",
   "main": "main.ts",
   "scripts": {
@@ -28,19 +28,25 @@
   },
   "homepage": "https://github.com/J4ncHy/diplomskabot#readme",
   "dependencies": {
-    "discord.js": "^14.14.1",
+    "@discord-player/extractor": "^4.4.7",
+    "@distube/ytdl-core": "^4.13.4",
+    "discord-player": "^6.6.10",
+    "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
-    "mongoose": "^8.3.2",
-    "pino": "^8.20.0"
+    "ffmpeg-static": "^5.2.0",
+    "mediaplex": "^0.0.9",
+    "mongoose": "^8.4.1",
+    "pino": "^8.21.0"
   },
   "devDependencies": {
     "@swc/cli": "^0.1.65",
-    "@swc/core": "^1.4.17",
-    "@typescript-eslint/eslint-plugin": "^7.7.1",
-    "@typescript-eslint/parser": "^5.62.0",
-    "eslint": "^9.1.1",
+    "@swc/core": "^1.5.24",
+    "@typescript-eslint/eslint-plugin": "^7.12.0",
+    "@typescript-eslint/parser": "^7.12.0",
+    "eslint": "^8.57.0",
+    "isomorphic-unfetch": "^4.0.2",
     "pino-pretty": "^10.3.1",
     "prettier": "^2.8.8",
-    "typescript-eslint": "^7.7.1"
+    "typescript-eslint": "^7.12.0"
   }
 }

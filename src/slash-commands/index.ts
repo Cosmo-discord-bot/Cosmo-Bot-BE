@@ -1,1 +1,0 @@
-export { ping_slash } from "../commands/ping";
