@@ -41,7 +41,6 @@ export class CustomClient extends Client {
             this.player = new Player(this);
             await this.player.extractors.loadDefault();
 
-            /*
             this.player.events.on('playerStart', (queue, track) => {
                 if (!track.requestedBy) track.requestedBy = queue.player.client.user;
 
@@ -57,9 +56,9 @@ export class CustomClient extends Client {
 
                 return queue.metadata.channel.send({ embeds: [embed] });
             });
-            this.player.events.on("audioTrackAdd", (queue) =>{
-                logger.debug(queue);
-            })*/
+            this.player.events.on('audioTrackAdd', queue => {
+                logger.info(`Track added to queue: ${queue.tracks.at(0)?.title}`);
+            });
         } catch (e) {
             logger.error(e);
         }
