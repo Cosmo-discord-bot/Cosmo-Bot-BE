@@ -1,8 +1,8 @@
 import {
+    ApplicationCommandOptionType,
     ChannelType,
     ChatInputCommandInteraction,
     GuildBasedChannel,
-    SlashCommandBuilder,
     Snowflake,
 } from 'discord.js';
 import { ICommand } from '../../interfaces/common/ICommand';
@@ -10,31 +10,25 @@ import { IConfig } from '../../interfaces/common/IConfig';
 import { logger } from '../../logger/pino';
 
 const set: ICommand = {
-    data: new SlashCommandBuilder()
-        .setName('set')
-        .setDescription('Set various bot configurations')
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('mainchannel')
-                .setDescription('Set the main channel')
-                .addChannelOption(option =>
-                    option.setName('channel').setDescription('The main channel to set').setRequired(true)
-                )
-        )
-
-        .addSubcommand(subcommand =>
-            subcommand
-                .setName('prefix')
-                .setDescription('Set the bot command prefix')
-                .addStringOption(option =>
-                    option
-                        .setName('prefix')
-                        .setDescription('The new prefix to set')
-                        .setMinLength(1)
-                        .setMaxLength(3)
-                        .setRequired(true)
-                )
-        ),
+    data: {
+        name: 'set',
+        description: 'Set various bot configurations',
+        options: [
+            {
+                name: 'mainchannel',
+                description: 'Set the main channel',
+                type: ApplicationCommandOptionType.Subcommand,
+                options: [
+                    {
+                        name: 'channel',
+                        description: 'The main channel to set',
+                        type: ApplicationCommandOptionType.Channel,
+                        required: true,
+                    },
+                ],
+            },
+        ],
+    },
     execute: async (interaction: ChatInputCommandInteraction) => {
         try {
             const subcommand: string | null = interaction.options.getSubcommand();
@@ -49,7 +43,10 @@ const set: ICommand = {
                     return;
                 }
                 setMainchannel(channel.id, interaction);
-            } else if (subcommand === 'prefix') {
+            }
+            /*
+            else if (subcommand === 'prefix') {
+
                 const prefix = interaction.options.getString('prefix');
                 if (!prefix) {
                     await interaction.reply({ content: 'Please provide a valid prefix.', ephemeral: true });
@@ -57,6 +54,7 @@ const set: ICommand = {
                 }
                 setPrefix(prefix, interaction);
             }
+             */
         } catch (error) {
             if (error == 'No subcommand provided') {
                 await interaction.reply({ content: 'Please provide a subcommand.', ephemeral: true });

@@ -1,23 +1,32 @@
 import {
+    ApplicationCommandOptionType,
     AutocompleteInteraction,
     ChatInputCommandInteraction,
-    SlashCommandBuilder,
     VoiceBasedChannel,
 } from 'discord.js';
 import { ICommand } from '../../interfaces/common/ICommand';
-import { logger } from '../../logger/pino';
-import { ErrorEmbed } from '../../helper/embeds';
-import { Playlist, useMainPlayer } from 'discord-player';
+import { BaseEmbed, ErrorEmbed } from '../../helper/embeds';
+import { Player, useMainPlayer } from 'discord-player';
 import playerOptions from '../../config/playerOptions';
 
 const play: ICommand = {
-    data: new SlashCommandBuilder()
-        .setName('play')
-        .setDescription('Play music')
-        .addStringOption(option =>
-            option.setName('query').setDescription('The song you want to play').setRequired(true).setAutocomplete(true)
-        ),
-
+    data: {
+        name: 'play',
+        description: 'Play music.',
+        options: [
+            {
+                type: ApplicationCommandOptionType.String,
+                name: 'query',
+                description: 'The name or url of the song, you want to play.',
+                required: true,
+                minLength: 1,
+                maxLength: 256,
+            },
+        ],
+        category: 'music',
+        queueOnly: true,
+        validateVC: true,
+    },
     async suggest(interaction: AutocompleteInteraction) {
         const query = interaction.options.getString('query', false)?.trim();
         if (!query) return;
@@ -46,36 +55,68 @@ const play: ICommand = {
             });
         }
 
-        logger.info(formattedResult);
         return interaction.respond(formattedResult);
     },
+
     execute: async (interaction: ChatInputCommandInteraction) => {
         if (!interaction.inCachedGuild()) return;
-        const player = useMainPlayer();
-        const channel = interaction.member.voice.channel!;
-        const query = interaction.options.getString('query', true);
+
+        const query: string = interaction.options.getString('query', true);
+        const player: Player = useMainPlayer();
+        const channel: VoiceBasedChannel = interaction.member.voice.channel as VoiceBasedChannel;
 
         await interaction.deferReply();
 
         const result = await player.search(query, {
             requestedBy: interaction.user,
         });
-        const queue = player.nodes.create(channel as VoiceBasedChannel, playerOptions);
 
-        if (!result.hasTracks()) {
-            const embed = ErrorEmbed('No results found');
-            interaction.editReply({ embeds: [embed] });
-            return;
-        }
+        if (!result.hasTracks())
+            return interaction.editReply({
+                embeds: [ErrorEmbed(`No results found for \`${query}\`.`)],
+            });
 
-        if (result.hasPlaylist()) {
-            const playlist = result.playlist as Playlist;
-            queue.addTrack(playlist);
-        } else {
-            queue.addTrack(result.tracks);
+        try {
+            const { queue, track, searchResult } = await player.play(channel, result, {
+                nodeOptions: {
+                    metadata: interaction,
+                    ...playerOptions,
+                },
+                requestedBy: interaction.user,
+                connectionOptions: { deaf: true },
+            });
+
+            const embed = BaseEmbed().setFooter({
+                text: `Requested by: ${interaction.user.tag}`,
+                iconURL: interaction.member.displayAvatarURL(),
+            });
+
+            if (searchResult.hasPlaylist() && searchResult.playlist) {
+                const playlist = searchResult.playlist;
+                embed
+                    .setAuthor({
+                        name: `Playlist queued - ${playlist.tracks.length} tracks.`,
+                    })
+                    .setTitle(playlist.title)
+                    .setURL(playlist.url)
+                    .setThumbnail(playlist.thumbnail);
+            } else {
+                embed
+                    .setAuthor({
+                        name: `Track queued - Position ${queue.node.getTrackPosition(track) + 1}`,
+                    })
+                    .setTitle(track.title)
+                    .setURL(track.url)
+                    .setThumbnail(track.thumbnail);
+            }
+
+            return interaction.editReply({ embeds: [embed] }).catch(console.error);
+        } catch (e) {
+            console.error(e);
+            return interaction.editReply({
+                embeds: [ErrorEmbed(`Something went wrong while playing \`${query}\``)],
+            });
         }
-        logger.info(queue);
-        queue.node.play();
     },
 };
 
