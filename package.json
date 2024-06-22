@@ -29,14 +29,14 @@
   "homepage": "https://github.com/J4ncHy/diplomskabot#readme",
   "dependencies": {
     "@discord-player/extractor": "^4.4.7",
+    "@distube/ytdl-core": "^4.13.4",
     "discord-player": "^6.6.10",
     "discord.js": "^14.15.3",
     "dotenv": "^16.4.5",
     "ffmpeg-static": "^5.2.0",
     "mediaplex": "^0.0.9",
     "mongoose": "^8.4.1",
-    "pino": "^8.21.0",
-    "youtube-ext": "^1.1.25"
+    "pino": "^8.21.0"
   },
   "devDependencies": {
     "@swc/cli": "^0.1.65",
