@@ -1,16 +1,17 @@
-import { Client, Collection, FetchGuildScheduledEventSubscribersOptions, Guild, GuildScheduledEvent } from 'discord.js';
+import { Collection, FetchGuildScheduledEventSubscribersOptions, Guild, GuildScheduledEvent } from 'discord.js';
 import { ICategorizedEvents } from '../interfaces/events/ICategorizedEvents';
 import { IEvent } from '../interfaces/events/IEvent';
 import { logger } from '../logger/pino';
 import { EventController } from '../controllers/EventController';
 import { IEventHandler } from '../interfaces/events/IEventHandler';
+import {CustomClient} from "../Classes/CustomClient";
 
 export class EventsHelper {
-    public static async __init__(eventHandlers: IEventHandler, guild: Guild, client: Client): Promise<void> {
+    public static async __init__(eventHandlers: IEventHandler, guild: Guild, client: CustomClient): Promise<void> {
         const gID: string = guild.id;
         logger.debug(`Events - ${gID} ${guild.name} `);
         eventHandlers[gID] = new EventController(client, gID);
-        let events: Collection<string, GuildScheduledEvent> = await guild.scheduledEvents.fetch();
+        const events: Collection<string, GuildScheduledEvent> = await guild.scheduledEvents.fetch();
 
         const discordEvents: GuildScheduledEvent[] = EventsHelper.splitEventsByGuild(events, gID);
         const dbEvents: IEvent[] = [...client.events.events.values()].filter(event => event.guildId === gID);
@@ -29,7 +30,7 @@ export class EventsHelper {
         for (const event of categorizedEvents.update) {
             eventHandlers[gID].updateEvent(event, event);
             // Handle role subscribers
-            let options: FetchGuildScheduledEventSubscribersOptions = {
+            const options: FetchGuildScheduledEventSubscribersOptions = {
                 withMember: true,
             };
             // Check for a better way of doing this
@@ -51,7 +52,7 @@ export class EventsHelper {
         events: Collection<string, GuildScheduledEvent>,
         guildId: string
     ): GuildScheduledEvent[] {
-        let eventsByGuild: GuildScheduledEvent[] = [];
+        const eventsByGuild: GuildScheduledEvent[] = [];
         events.forEach((event: GuildScheduledEvent) => {
             if (event.guildId === guildId) {
                 eventsByGuild.push(event);
@@ -61,7 +62,7 @@ export class EventsHelper {
     }
 
     public static categorizeEvents(guildEvents: GuildScheduledEvent[], dbEvents: IEvent[]): ICategorizedEvents {
-        let categorizedEvents: ICategorizedEvents = {
+        const categorizedEvents: ICategorizedEvents = {
             create: [],
             update: [],
             delete: [],

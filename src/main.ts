@@ -1,5 +1,4 @@
 import 'dotenv/config';
-import { generateFirstConfig } from './helper/generateFirstConfig';
 import { logger } from './logger/pino';
 import {
     Events,
@@ -11,12 +10,12 @@ import {
     User,
     VoiceState,
 } from 'discord.js';
-//import { router } from './router';
-import { interactionController } from './controllers/InteractionController';
 import { CustomClient } from './Classes/CustomClient';
-import { IConfig } from './interfaces/common/IConfig';
 import { EventController } from './controllers/EventController';
+import { interactionController } from './controllers/InteractionController';
+import { IConfig } from './interfaces/common/IConfig';
 import { IEventHandler } from './interfaces/events/IEventHandler';
+import { IMessageActivity } from './interfaces/statistics/IMessageActivity';
 import { EventsHelper } from './helper/EventsHelper';
 import { IMessageActivity } from './interfaces/statistics/IMessageActivity';
 
@@ -50,7 +49,7 @@ client.once(Events.ClientReady, (): void => {
     client.__initClient__().then(async () => {
         for (const gID of guildIDs) {
             // Check if all guilds have a config and generate one if not
-            let guild: Guild = client.guilds.cache.get(gID)!;
+            const guild: Guild = client.guilds.cache.get(gID)!;
             if (client.config.configs.get(gID) == null) {
                 await client.config.insertNewConfig(await generateFirstConfig(guild));
             }
