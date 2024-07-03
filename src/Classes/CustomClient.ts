@@ -8,6 +8,7 @@ import { StatisticsWrapper } from './StatisticsWrapper';
 import { Player } from 'discord-player';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
+import {BaseEmbed} from "../helper/embeds";
 
 export class CustomClient extends Client {
     commands: Collection<string, ICommand>;
@@ -24,7 +25,7 @@ export class CustomClient extends Client {
 
     public async __initClient__(): Promise<void> {
         try {
-            let db: MongoDB = new MongoDB();
+            const db: MongoDB = new MongoDB();
             await db.connect();
             this.config = new ConfigDB(db.connection!);
             await this.config.loadConfig();
@@ -72,6 +73,7 @@ export class CustomClient extends Client {
             const commandFiles: string[] = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
             for (const file of commandFiles) {
                 const filePath: string = path.join(commandsPath, file);
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 const command: ICommand = require(filePath) as ICommand;
                 if ('data' in command && 'execute' in command) {
                     this.commands.set(command.data.name, command);
@@ -91,7 +93,7 @@ export class CustomClient extends Client {
             logger.error('Token or Client ID not found');
             throw 'Token or Client ID not found';
         }
-        let commands = this.commands.map(command => command.data);
+        const commands = this.commands.map(command => command.data);
         const rest: REST = new REST({ version: '10' }).setToken(token);
         //for (const command of this.commands.values()) {
         for (const guildId of this.config.configs.keys()) {

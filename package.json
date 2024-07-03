@@ -1,8 +1,9 @@
-{
+ {
   "name": "diplomskabot",
   "version": "0.2.2",
   "description": "Multi server discord bot",
   "main": "main.ts",
+
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "test": "echo \"Error: no test specified\" && exit 1",
