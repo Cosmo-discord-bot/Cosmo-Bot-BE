@@ -16,15 +16,16 @@ import {
 import { logger } from '../logger/pino';
 import { IEvent } from '../interfaces/events/IEvent';
 import { Common } from '../helper/Common';
+import {CustomClient} from "../Classes/CustomClient";
 
 // TODO - Channels from ended events should be moved to Previous Events category
 // TODO - Check if channels should be threads
 export class EventController {
     private guild: Guild;
-    private client: Client;
+    private client: CustomClient;
     private eventsCategory: CategoryChannel;
 
-    constructor(client: Client, guildId: string) {
+    constructor(client: CustomClient, guildId: string) {
         this.client = client;
 
         if (!this.client.config) {
