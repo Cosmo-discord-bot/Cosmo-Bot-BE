@@ -1,5 +1,7 @@
 import 'dotenv/config';
 import { logger } from './logger/pino';
+import express from 'express';
+import cors from 'cors';
 import {
     Events,
     GatewayIntentBits,
@@ -17,7 +19,28 @@ import { IConfig } from './interfaces/common/IConfig';
 import { IEventHandler } from './interfaces/events/IEventHandler';
 import { IMessageActivity } from './interfaces/statistics/IMessageActivity';
 import { EventsHelper } from './helper/EventsHelper';
-import { IMessageActivity } from './interfaces/statistics/IMessageActivity';
+import { generateFirstConfig } from './helper/generateFirstConfig';
+import { router } from './api/router';
+/*
+    Express api server initialization
+ */
+
+const app = express();
+
+
+const port: string | 3000 = process.env.EXPRESS_PORT || 3000;
+app.use(
+    cors({
+        origin: process.env.CORS_ORIGIN || "*", // Specify the allowed origin
+        methods: 'GET,PUT,POST,DELETE', // Specify allowed HTTP methods
+    })
+);
+app.use(express.json());
+app.use('/api/v1/', router);
+
+app.listen(port, () => {
+    logger.info(`Server is running at http://localhost:${port}`);
+});
 
 const client: CustomClient = new CustomClient({
     intents: [
