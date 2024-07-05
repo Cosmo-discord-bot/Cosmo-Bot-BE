@@ -36,9 +36,7 @@ const nowplaying: ICommand = {
             .setTitle(track.title)
             .setURL(track.url)
             .setThumbnail(track.thumbnail)
-            .setDescription(
-                `Played by: ${track.requestedBy!.toString()}\n\n${queue.node.createProgressBar()}`
-            )
+            .setDescription(`Played by: ${track.requestedBy!.toString()}\n\n${queue.node.createProgressBar()}`)
 
         return interaction.reply({ ephemeral: true, embeds: [embed] })
     },

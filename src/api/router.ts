@@ -11,8 +11,7 @@ export const rtr = (client: CustomClient) => {
             uptime: process.uptime(),
             message: 'OK',
             timestamp: Date.now(),
-            discordStatus:
-                client.ws.status === 0 ? 'Connected' : 'Disconnected',
+            discordStatus: client.ws.status === 0 ? 'Connected' : 'Disconnected',
             ping: client.ws.ping,
             guildCount: client.guilds.cache.size,
         }

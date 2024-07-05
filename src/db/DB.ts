@@ -11,13 +11,10 @@ export class MongoDB {
 
     public async connect(): Promise<void> {
         try {
-            this.connection = await mongoose.createConnection(
-                `mongodb://${process.env.DB_URL!}/${process.env.DB_NAME!}`,
-                {
-                    useNewUrlParser: true,
-                    useUnifiedTopology: true,
-                } as mongoose.ConnectOptions
-            )
+            this.connection = await mongoose.createConnection(`mongodb://${process.env.DB_URL!}/${process.env.DB_NAME!}`, {
+                useNewUrlParser: true,
+                useUnifiedTopology: true,
+            } as mongoose.ConnectOptions)
             logger.info('Connected to MongoDB')
         } catch (error) {
             logger.error('Error connecting to MongoDB:', error)

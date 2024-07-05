@@ -1,16 +1,12 @@
 import { ICommand } from '../../interfaces/common/ICommand'
 import { ErrorEmbed, SuccessEmbed } from '../../helper/embeds'
 import { useQueue } from 'discord-player'
-import {
-    ApplicationCommandOptionType,
-    ChatInputCommandInteraction,
-} from 'discord.js'
+import { ApplicationCommandOptionType, ChatInputCommandInteraction } from 'discord.js'
 
 const replay: ICommand = {
     data: {
         name: 'replay',
-        description:
-            'Jump to specific song on the queue without removing others',
+        description: 'Jump to specific song on the queue without removing others',
         options: [
             {
                 name: 'position',

@@ -1,10 +1,7 @@
 import { ErrorEmbed, SuccessEmbed } from '../../helper/embeds'
 import { ICommand } from '../../interfaces/common/ICommand'
 import { useQueue } from 'discord-player'
-import {
-    ApplicationCommandOptionType,
-    ChatInputCommandInteraction,
-} from 'discord.js'
+import { ApplicationCommandOptionType, ChatInputCommandInteraction } from 'discord.js'
 
 const skip: ICommand = {
     data: {

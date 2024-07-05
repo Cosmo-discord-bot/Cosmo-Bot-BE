@@ -12,11 +12,7 @@ export class EventsDB {
     constructor(connection: Connection) {
         this.connection = connection
 
-        this.model = this.connection.model<IEvent>(
-            this.collection,
-            eventSchema,
-            this.collection
-        )
+        this.model = this.connection.model<IEvent>(this.collection, eventSchema, this.collection)
 
         this.events = new Map<string, IEvent>()
     }
@@ -37,24 +33,17 @@ export class EventsDB {
 
     public async updateEvents(event: IEvent): Promise<void> {
         try {
-            const response: UpdateWriteOpResult = await this.model.replaceOne(
-                { eventId: event.eventId },
-                event
-            )
-            if (!response.acknowledged)
-                throw new Error('updateConfig: Config updating failed')
+            const response: UpdateWriteOpResult = await this.model.replaceOne({ eventId: event.eventId }, event)
+            if (!response.acknowledged) throw new Error('updateConfig: Config updating failed')
         } catch (error) {
-            logger.error(
-                `updateConfig: Config updating failed - ${event.guildId}`
-            )
+            logger.error(`updateConfig: Config updating failed - ${event.guildId}`)
         }
     }
 
     public async deleteEvent(eventId: string): Promise<void> {
         try {
             const response = await this.model.deleteOne({ eventId: eventId })
-            if (!response.acknowledged)
-                throw new Error('deleteEvent: Event deletion failed')
+            if (!response.acknowledged) throw new Error('deleteEvent: Event deletion failed')
             this.events.delete(eventId)
         } catch (error) {
             logger.error(`deleteEvent: Event deletion failed - ${eventId}`)

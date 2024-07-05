@@ -1,10 +1,7 @@
 import { BaseEmbed, ErrorEmbed, SuccessEmbed } from '../../helper/embeds'
 import { ICommand } from '../../interfaces/common/ICommand'
 import { useQueue } from 'discord-player'
-import {
-    ApplicationCommandOptionType,
-    ChatInputCommandInteraction,
-} from 'discord.js'
+import { ApplicationCommandOptionType, ChatInputCommandInteraction } from 'discord.js'
 
 const seek: ICommand = {
     data: {
@@ -35,8 +32,7 @@ const seek: ICommand = {
                 embeds: [BaseEmbed('There is no queue in this server.')],
             })
         }
-        const timestamp =
-            interaction.options.getNumber('timestamp', true) * 1000
+        const timestamp = interaction.options.getNumber('timestamp', true) * 1000
 
         if (!queue.currentTrack) {
             return interaction.reply({
@@ -48,13 +44,7 @@ const seek: ICommand = {
         if (timestamp > queue.currentTrack.durationMS) {
             return interaction.reply({
                 ephemeral: true,
-                embeds: [
-                    ErrorEmbed(
-                        `Please provide a valid timestamp within 0 and ${
-                            queue.currentTrack.durationMS / 1000
-                        }.`
-                    ),
-                ],
+                embeds: [ErrorEmbed(`Please provide a valid timestamp within 0 and ${queue.currentTrack.durationMS / 1000}.`)],
             })
         }
 

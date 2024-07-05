@@ -1,19 +1,13 @@
 import { Interaction } from 'discord.js'
 import { CustomClient } from '../Classes/CustomClient'
 
-export const interactionController = async (
-    interaction: Interaction
-): Promise<void> => {
+export const interactionController = async (interaction: Interaction): Promise<void> => {
     if (!interaction.isChatInputCommand()) return
 
-    const command = (interaction.client as CustomClient).commands.get(
-        interaction.commandName
-    )
+    const command = (interaction.client as CustomClient).commands.get(interaction.commandName)
 
     if (!command) {
-        console.error(
-            `No command matching ${interaction.commandName} was found.`
-        )
+        console.error(`No command matching ${interaction.commandName} was found.`)
         return
     }
 

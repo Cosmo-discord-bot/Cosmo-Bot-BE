@@ -12,11 +12,7 @@ export class ConfigDB {
 
     constructor(connection: Connection) {
         this.connection = connection
-        this.model = this.connection.model<IConfig>(
-            this.collection,
-            configSchema,
-            this.collection
-        )
+        this.model = this.connection.model<IConfig>(this.collection, configSchema, this.collection)
 
         this.configs = new Collection<string, IConfig>()
     }
@@ -34,14 +30,10 @@ export class ConfigDB {
 
     public async updateConfig(config: IConfig): Promise<void> {
         try {
-            const response: mongoose.UpdateWriteOpResult =
-                await this.model.replaceOne({ guildId: config.guildId }, config)
-            if (!response.acknowledged)
-                throw new Error('updateConfig: Config updating failed')
+            const response: mongoose.UpdateWriteOpResult = await this.model.replaceOne({ guildId: config.guildId }, config)
+            if (!response.acknowledged) throw new Error('updateConfig: Config updating failed')
         } catch (error) {
-            logger.error(
-                `updateConfig: Config updating failed - ${config.guildId}`
-            )
+            logger.error(`updateConfig: Config updating failed - ${config.guildId}`)
         }
     }
 }

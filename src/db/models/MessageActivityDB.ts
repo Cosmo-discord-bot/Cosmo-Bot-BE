@@ -1,9 +1,6 @@
 import mongoose, { Connection } from 'mongoose'
 import { logger } from '../../logger/pino'
-import {
-    IGuildMessageActivity,
-    IMessageActivity,
-} from '../../interfaces/statistics/IMessageActivity'
+import { IGuildMessageActivity, IMessageActivity } from '../../interfaces/statistics/IMessageActivity'
 import { guildMessageActivitySchema } from '../schemas/MessageActivitySchema'
 
 export class MessageActivityDB {
@@ -13,30 +10,15 @@ export class MessageActivityDB {
 
     constructor(connection: Connection) {
         this.connection = connection
-        this.model = this.connection.model<IGuildMessageActivity>(
-            this.collection,
-            guildMessageActivitySchema,
-            this.collection
-        )
+        this.model = this.connection.model<IGuildMessageActivity>(this.collection, guildMessageActivitySchema, this.collection)
     }
 
-    public async insertMessageActivity(
-        guildId: string,
-        messageActivity: IMessageActivity
-    ): Promise<void> {
+    public async insertMessageActivity(guildId: string, messageActivity: IMessageActivity): Promise<void> {
         try {
-            await this.model.updateOne(
-                { guildId },
-                { $push: { activities: messageActivity } },
-                { upsert: true }
-            )
-            logger.info(
-                `insertMessageActivity: Message activity inserted - ${guildId} - ${messageActivity.userId} - ${messageActivity.channelId}`
-            )
+            await this.model.updateOne({ guildId }, { $push: { activities: messageActivity } }, { upsert: true })
+            logger.info(`insertMessageActivity: Message activity inserted - ${guildId} - ${messageActivity.userId} - ${messageActivity.channelId}`)
         } catch (error) {
-            logger.error(
-                `insertMessageActivity: Error inserting Message activity - ${guildId}, Error: ${error}`
-            )
+            logger.error(`insertMessageActivity: Error inserting Message activity - ${guildId}, Error: ${error}`)
         }
     }
 

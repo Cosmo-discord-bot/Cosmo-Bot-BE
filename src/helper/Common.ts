@@ -10,10 +10,8 @@ export class Common {
 
     public static getSecondArgumentFromText(text: string): string {
         try {
-            const argsMatch: RegExpMatchArray | null =
-                text.match('\\s+([^\\s]+)')
-            if (!argsMatch)
-                throw new Error('getArgsFromMessage: Arguments are missing')
+            const argsMatch: RegExpMatchArray | null = text.match('\\s+([^\\s]+)')
+            if (!argsMatch) throw new Error('getArgsFromMessage: Arguments are missing')
             return argsMatch[1]
         } catch (error) {
             return ''

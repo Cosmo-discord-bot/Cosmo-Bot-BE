@@ -1,10 +1,4 @@
-import {
-    ApplicationCommandOption,
-    AutocompleteInteraction,
-    CommandInteraction,
-    InteractionResponse,
-    Message,
-} from 'discord.js'
+import { ApplicationCommandOption, AutocompleteInteraction, CommandInteraction, InteractionResponse, Message } from 'discord.js'
 
 export interface ICommand {
     data: {
@@ -17,7 +11,5 @@ export interface ICommand {
         validateVC?: boolean
     }
     suggest?(interaction: AutocompleteInteraction): Promise<void>
-    execute(
-        interaction: CommandInteraction
-    ): Promise<Message<true> | InteractionResponse<true> | void> | undefined
+    execute(interaction: CommandInteraction): Promise<Message<true> | InteractionResponse<true> | void> | undefined
 }

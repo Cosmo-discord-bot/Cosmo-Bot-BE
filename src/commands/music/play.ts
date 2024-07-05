@@ -1,9 +1,4 @@
-import {
-    ApplicationCommandOptionType,
-    AutocompleteInteraction,
-    ChatInputCommandInteraction,
-    VoiceBasedChannel,
-} from 'discord.js'
+import { ApplicationCommandOptionType, AutocompleteInteraction, ChatInputCommandInteraction, VoiceBasedChannel } from 'discord.js'
 import { ICommand } from '../../interfaces/common/ICommand'
 import { BaseEmbed, ErrorEmbed } from '../../helper/embeds'
 import { Player, useMainPlayer } from 'discord-player'
@@ -38,10 +33,7 @@ const play: ICommand = {
             return
         }
 
-        const tracks =
-            searchResult.hasPlaylist() && searchResult.playlist
-                ? searchResult.playlist.tracks.slice(0, 24)
-                : searchResult.tracks.slice(0, 10)
+        const tracks = searchResult.hasPlaylist() && searchResult.playlist ? searchResult.playlist.tracks.slice(0, 24) : searchResult.tracks.slice(0, 10)
 
         const formattedResult = tracks.map((track) => ({
             name: track.title,
@@ -63,8 +55,7 @@ const play: ICommand = {
 
         const query: string = interaction.options.getString('query', true)
         const player: Player = useMainPlayer()
-        const channel: VoiceBasedChannel = interaction.member.voice
-            .channel as VoiceBasedChannel
+        const channel: VoiceBasedChannel = interaction.member.voice.channel as VoiceBasedChannel
 
         await interaction.deferReply()
 
@@ -78,18 +69,14 @@ const play: ICommand = {
             })
 
         try {
-            const { queue, track, searchResult } = await player.play(
-                channel,
-                result,
-                {
-                    nodeOptions: {
-                        metadata: interaction,
-                        ...playerOptions,
-                    },
-                    requestedBy: interaction.user,
-                    connectionOptions: { deaf: true },
-                }
-            )
+            const { queue, track, searchResult } = await player.play(channel, result, {
+                nodeOptions: {
+                    metadata: interaction,
+                    ...playerOptions,
+                },
+                requestedBy: interaction.user,
+                connectionOptions: { deaf: true },
+            })
 
             const embed = BaseEmbed().setFooter({
                 text: `Requested by: ${interaction.user.tag}`,
@@ -108,26 +95,18 @@ const play: ICommand = {
             } else {
                 embed
                     .setAuthor({
-                        name: `Track queued - Position ${
-                            queue.node.getTrackPosition(track) + 1
-                        }`,
+                        name: `Track queued - Position ${queue.node.getTrackPosition(track) + 1}`,
                     })
                     .setTitle(track.title)
                     .setURL(track.url)
                     .setThumbnail(track.thumbnail)
             }
 
-            return interaction
-                .editReply({ embeds: [embed] })
-                .catch(console.error)
+            return interaction.editReply({ embeds: [embed] }).catch(console.error)
         } catch (e) {
             console.error(e)
             return interaction.editReply({
-                embeds: [
-                    ErrorEmbed(
-                        `Something went wrong while playing \`${query}\``
-                    ),
-                ],
+                embeds: [ErrorEmbed(`Something went wrong while playing \`${query}\``)],
             })
         }
     },

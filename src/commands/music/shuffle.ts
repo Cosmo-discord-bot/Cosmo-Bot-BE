@@ -25,9 +25,7 @@ const shuffle: ICommand = {
         const mode = queue.toggleShuffle()
 
         return interaction.reply({
-            embeds: [
-                SuccessEmbed(`${mode ? 'Enabled' : 'Disabled'} shuffle mode.`),
-            ],
+            embeds: [SuccessEmbed(`${mode ? 'Enabled' : 'Disabled'} shuffle mode.`)],
         })
     },
 }

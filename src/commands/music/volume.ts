@@ -1,7 +1,4 @@
-import {
-    ApplicationCommandOptionType,
-    ChatInputCommandInteraction,
-} from 'discord.js'
+import { ApplicationCommandOptionType, ChatInputCommandInteraction } from 'discord.js'
 import { ICommand } from '../../interfaces/common/ICommand'
 import { InfoEmbed, SuccessEmbed } from '../../helper/embeds'
 import { useQueue } from 'discord-player'
@@ -39,9 +36,7 @@ const volume: ICommand = {
         if (!level) {
             return interaction.reply({
                 ephemeral: true,
-                embeds: [
-                    InfoEmbed(`Current volume level is ${queue.node.volume}%.`),
-                ],
+                embeds: [InfoEmbed(`Current volume level is ${queue.node.volume}%.`)],
             })
         }
 

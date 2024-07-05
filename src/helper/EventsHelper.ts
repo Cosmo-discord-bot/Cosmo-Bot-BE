@@ -1,9 +1,4 @@
-import {
-    Collection,
-    FetchGuildScheduledEventSubscribersOptions,
-    Guild,
-    GuildScheduledEvent,
-} from 'discord.js'
+import { Collection, FetchGuildScheduledEventSubscribersOptions, Guild, GuildScheduledEvent } from 'discord.js'
 import { ICategorizedEvents } from '../interfaces/events/ICategorizedEvents'
 import { IEvent } from '../interfaces/events/IEvent'
 import { logger } from '../logger/pino'
@@ -12,25 +7,16 @@ import { IEventHandler } from '../interfaces/events/IEventHandler'
 import { CustomClient } from '../Classes/CustomClient'
 
 export class EventsHelper {
-    public static async __init__(
-        eventHandlers: IEventHandler,
-        guild: Guild,
-        client: CustomClient
-    ): Promise<void> {
+    public static async __init__(eventHandlers: IEventHandler, guild: Guild, client: CustomClient): Promise<void> {
         const gID: string = guild.id
         logger.debug(`Events - ${gID} ${guild.name} `)
         eventHandlers[gID] = new EventController(client, gID)
-        const events: Collection<string, GuildScheduledEvent> =
-            await guild.scheduledEvents.fetch()
+        const events: Collection<string, GuildScheduledEvent> = await guild.scheduledEvents.fetch()
 
-        const discordEvents: GuildScheduledEvent[] =
-            EventsHelper.splitEventsByGuild(events, gID)
-        const dbEvents: IEvent[] = [...client.events.events.values()].filter(
-            (event) => event.guildId === gID
-        )
+        const discordEvents: GuildScheduledEvent[] = EventsHelper.splitEventsByGuild(events, gID)
+        const dbEvents: IEvent[] = [...client.events.events.values()].filter((event) => event.guildId === gID)
 
-        const categorizedEvents: ICategorizedEvents =
-            EventsHelper.categorizeEvents(discordEvents, dbEvents)
+        const categorizedEvents: ICategorizedEvents = EventsHelper.categorizeEvents(discordEvents, dbEvents)
 
         logger.debug(categorizedEvents)
 
@@ -62,10 +48,7 @@ export class EventsHelper {
         }
     }
 
-    public static splitEventsByGuild(
-        events: Collection<string, GuildScheduledEvent>,
-        guildId: string
-    ): GuildScheduledEvent[] {
+    public static splitEventsByGuild(events: Collection<string, GuildScheduledEvent>, guildId: string): GuildScheduledEvent[] {
         const eventsByGuild: GuildScheduledEvent[] = []
         events.forEach((event: GuildScheduledEvent) => {
             if (event.guildId === guildId) {
@@ -75,10 +58,7 @@ export class EventsHelper {
         return eventsByGuild
     }
 
-    public static categorizeEvents(
-        guildEvents: GuildScheduledEvent[],
-        dbEvents: IEvent[]
-    ): ICategorizedEvents {
+    public static categorizeEvents(guildEvents: GuildScheduledEvent[], dbEvents: IEvent[]): ICategorizedEvents {
         const categorizedEvents: ICategorizedEvents = {
             create: [],
             update: [],
@@ -88,9 +68,7 @@ export class EventsHelper {
         // Loop through guild events
         for (const discordEvent of guildEvents) {
             // Check if the event exists in the database
-            const dbEventIndex = dbEvents.findIndex(
-                (event) => event.eventId === discordEvent.id
-            )
+            const dbEventIndex = dbEvents.findIndex((event) => event.eventId === discordEvent.id)
 
             if (dbEventIndex == -1) {
                 // If the event only exists in the guild, push it to the create array

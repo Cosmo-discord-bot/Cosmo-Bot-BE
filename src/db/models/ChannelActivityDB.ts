@@ -10,29 +10,15 @@ export class ChannelActivityDB {
 
     constructor(connection: Connection) {
         this.connection = connection
-        this.model = this.connection.model<IGuildChannelActivity>(
-            this.collection,
-            guildChannelActivitySchema,
-            this.collection
-        )
+        this.model = this.connection.model<IGuildChannelActivity>(this.collection, guildChannelActivitySchema, this.collection)
     }
 
-    public async insertChannelActivity(
-        channelActivity: IGuildChannelActivity
-    ): Promise<void> {
+    public async insertChannelActivity(channelActivity: IGuildChannelActivity): Promise<void> {
         try {
             await this.model.create(channelActivity)
-            logger.info(
-                `insertChannelActivity: Message activity inserted - ${JSON.stringify(
-                    channelActivity
-                )}`
-            )
+            logger.info(`insertChannelActivity: Message activity inserted - ${JSON.stringify(channelActivity)}`)
         } catch (error) {
-            logger.error(
-                `insertChannelActivity: Error inserting Message activity - ${JSON.stringify(
-                    channelActivity
-                )}, Error: ${error}`
-            )
+            logger.error(`insertChannelActivity: Error inserting Message activity - ${JSON.stringify(channelActivity)}, Error: ${error}`)
         }
     }
 

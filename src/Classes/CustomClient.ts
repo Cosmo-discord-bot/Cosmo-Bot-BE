@@ -42,8 +42,7 @@ export class CustomClient extends Client {
             await this.player.extractors.loadDefault()
 
             this.player.events.on('playerStart', (queue, track) => {
-                if (!track.requestedBy)
-                    track.requestedBy = queue.player.client.user
+                if (!track.requestedBy) track.requestedBy = queue.player.client.user
 
                 const embed = BaseEmbed()
                     .setAuthor({ name: 'Now playing' })
@@ -58,9 +57,7 @@ export class CustomClient extends Client {
                 return queue.metadata.channel.send({ embeds: [embed] })
             })
             this.player.events.on('audioTrackAdd', (queue) => {
-                logger.info(
-                    `Track added to queue: ${queue.tracks.at(0)?.title}`
-                )
+                logger.info(`Track added to queue: ${queue.tracks.at(0)?.title}`)
             })
         } catch (e) {
             logger.error(e)
@@ -73,9 +70,7 @@ export class CustomClient extends Client {
 
         for (const folder of commandFolders) {
             const commandsPath: string = path.join(foldersPath, folder)
-            const commandFiles: string[] = fs
-                .readdirSync(commandsPath)
-                .filter((file) => file.endsWith('.js'))
+            const commandFiles: string[] = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.js'))
             for (const file of commandFiles) {
                 const filePath: string = path.join(commandsPath, file)
                 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -83,9 +78,7 @@ export class CustomClient extends Client {
                 if ('data' in command && 'execute' in command) {
                     this.commands.set(command.data.name, command)
                 } else {
-                    logger.warn(
-                        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
-                    )
+                    logger.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`)
                 }
             }
         }
