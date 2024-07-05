@@ -1,7 +1,7 @@
-import { ErrorEmbed, SuccessEmbed } from '../../helper/embeds'
-import { ICommand } from '../../interfaces/common/ICommand'
-import { useQueue } from 'discord-player'
-import { ChatInputCommandInteraction } from 'discord.js'
+import { ErrorEmbed, SuccessEmbed } from '../../helper/embeds';
+import { ICommand } from '../../interfaces/common/ICommand';
+import { useQueue } from 'discord-player';
+import { ChatInputCommandInteraction } from 'discord.js';
 
 const resume: ICommand = {
     data: {
@@ -12,29 +12,29 @@ const resume: ICommand = {
         validateVC: true,
     },
     execute(interaction: ChatInputCommandInteraction) {
-        if (!interaction.inCachedGuild()) return
-        if (!interaction.guildId) return
+        if (!interaction.inCachedGuild()) return;
+        if (!interaction.guildId) return;
 
-        const queue = useQueue(interaction.guildId!)
+        const queue = useQueue(interaction.guildId!);
 
         if (!queue || queue.isEmpty())
             return interaction.reply({
                 ephemeral: true,
                 embeds: [ErrorEmbed('The queue has no song to skip to.')],
-            })
+            });
 
         if (queue.node.isPlaying())
             return interaction.reply({
                 ephemeral: true,
                 embeds: [ErrorEmbed('The playback is not paused.')],
-            })
+            });
 
-        queue.node.resume()
+        queue.node.resume();
 
         return interaction.reply({
             embeds: [SuccessEmbed('Resumed the playback.')],
-        })
+        });
     },
-}
+};
 
-module.exports = resume
+module.exports = resume;

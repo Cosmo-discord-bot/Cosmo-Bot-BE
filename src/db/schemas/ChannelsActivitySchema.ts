@@ -1,5 +1,5 @@
-import { Schema } from 'mongoose'
-import { IGuildChannelActivity } from '../../interfaces/statistics/IChannelActivity'
+import { Schema } from 'mongoose';
+import { IGuildChannelActivity } from '../../interfaces/statistics/IChannelActivity';
 
 export const guildChannelActivitySchema: Schema<IGuildChannelActivity> = new Schema<IGuildChannelActivity>(
     {
@@ -18,4 +18,4 @@ export const guildChannelActivitySchema: Schema<IGuildChannelActivity> = new Sch
             granularity: 'hours',
         },
     }
-)
+);

@@ -1,5 +1,5 @@
-import mongoose from 'mongoose'
-import { IGuildVoiceActivity, IVoiceActivity } from '../../interfaces/statistics/IVoiceActivity'
+import mongoose from 'mongoose';
+import { IGuildVoiceActivity, IVoiceActivity } from '../../interfaces/statistics/IVoiceActivity';
 
 const voiceActivitySchema: mongoose.Schema<IVoiceActivity> = new mongoose.Schema<IVoiceActivity>(
     {
@@ -10,9 +10,9 @@ const voiceActivitySchema: mongoose.Schema<IVoiceActivity> = new mongoose.Schema
         active: { type: Boolean, required: true },
     },
     { _id: false }
-)
+);
 
 export const guildVoiceActivitySchema: mongoose.Schema<IGuildVoiceActivity> = new mongoose.Schema<IGuildVoiceActivity>({
     guildId: { type: String, required: true, unique: true },
     activities: [voiceActivitySchema],
-})
+});

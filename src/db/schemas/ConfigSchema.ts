@@ -1,5 +1,5 @@
-import { Schema } from 'mongoose'
-import { IConfig } from '../../interfaces/common/IConfig'
+import { Schema } from 'mongoose';
+import { IConfig } from '../../interfaces/common/IConfig';
 
 export const configSchema: Schema<IConfig> = new Schema<IConfig>({
     guildId: { type: String, required: true },
@@ -8,4 +8,4 @@ export const configSchema: Schema<IConfig> = new Schema<IConfig>({
     mainChannelId: { type: String, required: true },
     rolesChannelId: { type: String, required: true },
     eventsGroupId: { type: String, required: true },
-})
+});
