@@ -1,12 +1,12 @@
-require('dotenv').config();
-import mongoose, { Connection } from 'mongoose';
-import { logger } from '../logger/pino';
+import 'dotenv/config'
+import mongoose, { Connection } from 'mongoose'
+import { logger } from '../logger/pino'
 
 export class MongoDB {
-    public connection: Connection | null;
+    public connection: Connection | null
 
     constructor() {
-        this.connection = null;
+        this.connection = null
     }
 
     public async connect(): Promise<void> {
@@ -17,17 +17,17 @@ export class MongoDB {
                     useNewUrlParser: true,
                     useUnifiedTopology: true,
                 } as mongoose.ConnectOptions
-            );
-            logger.info('Connected to MongoDB');
+            )
+            logger.info('Connected to MongoDB')
         } catch (error) {
-            logger.error('Error connecting to MongoDB:', error);
+            logger.error('Error connecting to MongoDB:', error)
         }
     }
 
     public disconnect(): void {
         if (this.connection) {
-            this.connection.close();
-            console.log('Disconnected from MongoDB');
+            this.connection.close()
+            console.log('Disconnected from MongoDB')
         }
     }
 }

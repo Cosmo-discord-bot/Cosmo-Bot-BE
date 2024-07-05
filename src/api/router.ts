@@ -1,13 +1,41 @@
-import { logger } from '../logger/pino';
-import { Router, Request, Response } from 'express';
-import { auth } from './auth/auth';
+import { Request, Response, Router } from 'express'
+import { logger } from '../logger/pino'
+import { CustomClient } from '../Classes/CustomClient'
+import { configuration } from './configuration/configuration'
 
-export const router: Router = Router();
+export const rtr = (client: CustomClient) => {
+    const router: Router = Router()
 
-// Health Check
-router.get('/', (req: Request, res: Response): void => {
-    logger.info('Hello, i am alive!');
-    res.send('Hello, i am alive!');
-});
+    router.get('/health', (req: Request, res: Response): void => {
+        const healthCheck = {
+            uptime: process.uptime(),
+            message: 'OK',
+            timestamp: Date.now(),
+            discordStatus:
+                client.ws.status === 0 ? 'Connected' : 'Disconnected',
+            ping: client.ws.ping,
+            guildCount: client.guilds.cache.size,
+        }
 
-router.use('/auth', auth);
+        try {
+            res.status(200).json(healthCheck)
+            logger.debug('Health check passed:', healthCheck)
+        } catch (error) {
+            console.error('Health check failed:', error)
+
+            const errorResponse = {
+                uptime: process.uptime(),
+                message: 'Error in health check',
+                timestamp: Date.now(),
+                error: error instanceof Error ? error.message : String(error),
+            }
+
+            res.status(503).json(errorResponse)
+        }
+    })
+
+    // router.use('/auth', auth);
+    router.use('/configuration', configuration(client))
+
+    return router
+}

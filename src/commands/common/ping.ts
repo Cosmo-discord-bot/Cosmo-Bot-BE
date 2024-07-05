@@ -1,5 +1,5 @@
-import { CommandInteraction } from 'discord.js';
-import { ICommand } from '../../interfaces/common/ICommand';
+import { CommandInteraction } from 'discord.js'
+import { ICommand } from '../../interfaces/common/ICommand'
 
 const ping: ICommand = {
     data: {
@@ -7,8 +7,8 @@ const ping: ICommand = {
         description: 'Replies with Pong!',
     },
     execute: async (interaction: CommandInteraction) => {
-        await interaction.reply('Pong!');
+        await interaction.reply('Pong!')
     },
-};
+}
 
-module.exports = ping;
+module.exports = ping

@@ -1,21 +1,23 @@
-import { ChannelType, Guild, GuildBasedChannel } from 'discord.js';
-import { IConfig } from '../interfaces/common/IConfig';
-import { logger } from '../logger/pino';
+import { ChannelType, Guild, GuildBasedChannel } from 'discord.js'
+import { IConfig } from '../interfaces/common/IConfig'
+import { logger } from '../logger/pino'
 
 export const generateFirstConfig = async (guild: Guild): Promise<IConfig> => {
-    const mainChannel: GuildBasedChannel | undefined = guild.channels.cache.find(
-        channel => channel.name.toLowerCase() === 'general'
-    );
+    const mainChannel: GuildBasedChannel | undefined =
+        guild.channels.cache.find(
+            (channel) => channel.name.toLowerCase() === 'general'
+        )
 
     let rolesChannel: GuildBasedChannel | undefined = guild.channels.cache.find(
-        channel => channel.name.toLowerCase() === 'roles'
-    );
+        (channel) => channel.name.toLowerCase() === 'roles'
+    )
 
-    let eventsGroup: GuildBasedChannel | undefined = guild.channels.cache.find(
-        channel => channel.name.toLowerCase() === 'events'
-    );
+    const eventsGroup: GuildBasedChannel | undefined =
+        guild.channels.cache.find(
+            (channel) => channel.name.toLowerCase() === 'events'
+        )
 
-    logger.info('Generating first config for guild: ' + guild.name);
+    logger.info('Generating first config for guild: ' + guild.name)
 
     if (!rolesChannel) {
         // Create roles channel
@@ -24,10 +26,10 @@ export const generateFirstConfig = async (guild: Guild): Promise<IConfig> => {
             type: ChannelType.GuildText,
             permissionOverwrites: [],
             position: 1,
-        });
+        })
     }
 
-    logger.debug("Event's channel: " + eventsGroup);
+    logger.debug("Event's channel: " + eventsGroup)
 
     return {
         guildId: guild.id,
@@ -36,5 +38,5 @@ export const generateFirstConfig = async (guild: Guild): Promise<IConfig> => {
         mainChannelId: mainChannel ? mainChannel.id : '-1',
         rolesChannelId: rolesChannel ? rolesChannel.id : '-1',
         eventsGroupId: eventsGroup ? eventsGroup.id : '-1',
-    } as IConfig;
-};
+    } as IConfig
+}

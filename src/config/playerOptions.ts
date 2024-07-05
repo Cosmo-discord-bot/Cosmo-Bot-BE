@@ -1,4 +1,4 @@
-import { QueueRepeatMode } from 'discord-player';
+import { QueueRepeatMode } from 'discord-player'
 
 const playerOptions = {
     volume: 70,
@@ -12,6 +12,6 @@ const playerOptions = {
     pauseOnEmpty: true,
     preferBridgedMetadata: true,
     disableBiquad: true,
-};
+}
 
-export default playerOptions;
+export default playerOptions

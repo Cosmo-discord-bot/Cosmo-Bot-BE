@@ -1,9 +1,9 @@
 export interface IMessageActivity {
-    ts: number;
-    channelId: string;
-    userId: string;
+    ts: number
+    channelId: string
+    userId: string
 }
 export interface IGuildMessageActivity {
-    guildId: string;
-    activities: IMessageActivity[];
+    guildId: string
+    activities: IMessageActivity[]
 }

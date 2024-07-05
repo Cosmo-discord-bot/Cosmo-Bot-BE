@@ -1,7 +1,10 @@
-import { ApplicationCommandOptionType, ChatInputCommandInteraction } from 'discord.js';
-import { ICommand } from '../../interfaces/common/ICommand';
-import { InfoEmbed, SuccessEmbed } from '../../helper/embeds';
-import { useQueue } from 'discord-player';
+import {
+    ApplicationCommandOptionType,
+    ChatInputCommandInteraction,
+} from 'discord.js'
+import { ICommand } from '../../interfaces/common/ICommand'
+import { InfoEmbed, SuccessEmbed } from '../../helper/embeds'
+import { useQueue } from 'discord-player'
 
 const volume: ICommand = {
     data: {
@@ -23,29 +26,31 @@ const volume: ICommand = {
     },
 
     execute(interaction: ChatInputCommandInteraction) {
-        const queue = useQueue(interaction.guildId!);
-        const level = interaction.options.getNumber('level', false);
+        const queue = useQueue(interaction.guildId!)
+        const level = interaction.options.getNumber('level', false)
 
         if (!queue) {
             return interaction.reply({
                 ephemeral: true,
                 embeds: [InfoEmbed('There is no queue in this server.')],
-            });
+            })
         }
 
         if (!level) {
             return interaction.reply({
                 ephemeral: true,
-                embeds: [InfoEmbed(`Current volume level is ${queue.node.volume}%.`)],
-            });
+                embeds: [
+                    InfoEmbed(`Current volume level is ${queue.node.volume}%.`),
+                ],
+            })
         }
 
-        queue.node.setVolume(level);
+        queue.node.setVolume(level)
 
         return interaction.reply({
             embeds: [SuccessEmbed(`Volume has been set to ${level}%.`)],
-        });
+        })
     },
-};
+}
 
-module.exports = volume;
+module.exports = volume

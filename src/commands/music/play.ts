@@ -3,11 +3,11 @@ import {
     AutocompleteInteraction,
     ChatInputCommandInteraction,
     VoiceBasedChannel,
-} from 'discord.js';
-import { ICommand } from '../../interfaces/common/ICommand';
-import { BaseEmbed, ErrorEmbed } from '../../helper/embeds';
-import { Player, useMainPlayer } from 'discord-player';
-import playerOptions from '../../config/playerOptions';
+} from 'discord.js'
+import { ICommand } from '../../interfaces/common/ICommand'
+import { BaseEmbed, ErrorEmbed } from '../../helper/embeds'
+import { Player, useMainPlayer } from 'discord-player'
+import playerOptions from '../../config/playerOptions'
 
 const play: ICommand = {
     data: {
@@ -28,96 +28,109 @@ const play: ICommand = {
         validateVC: true,
     },
     async suggest(interaction: AutocompleteInteraction) {
-        const query = interaction.options.getString('query', false)?.trim();
-        if (!query) return;
+        const query = interaction.options.getString('query', false)?.trim()
+        if (!query) return
 
-        const player = useMainPlayer();
-        const searchResult = await player.search(query).catch(() => null);
-        await interaction.respond([{ name: 'No results found', value: '' }]);
+        const player = useMainPlayer()
+        const searchResult = await player.search(query).catch(() => null)
+        await interaction.respond([{ name: 'No results found', value: '' }])
         if (!searchResult) {
-            return;
+            return
         }
 
         const tracks =
             searchResult.hasPlaylist() && searchResult.playlist
                 ? searchResult.playlist.tracks.slice(0, 24)
-                : searchResult.tracks.slice(0, 10);
+                : searchResult.tracks.slice(0, 10)
 
-        const formattedResult = tracks.map(track => ({
+        const formattedResult = tracks.map((track) => ({
             name: track.title,
             value: track.url,
-        }));
+        }))
 
         if (searchResult.hasPlaylist() && searchResult.playlist) {
             formattedResult.unshift({
                 name: `Playlist | ${searchResult.playlist.title}`,
                 value: searchResult.playlist.url,
-            });
+            })
         }
 
-        return interaction.respond(formattedResult);
+        return interaction.respond(formattedResult)
     },
 
     execute: async (interaction: ChatInputCommandInteraction) => {
-        if (!interaction.inCachedGuild()) return;
+        if (!interaction.inCachedGuild()) return
 
-        const query: string = interaction.options.getString('query', true);
-        const player: Player = useMainPlayer();
-        const channel: VoiceBasedChannel = interaction.member.voice.channel as VoiceBasedChannel;
+        const query: string = interaction.options.getString('query', true)
+        const player: Player = useMainPlayer()
+        const channel: VoiceBasedChannel = interaction.member.voice
+            .channel as VoiceBasedChannel
 
-        await interaction.deferReply();
+        await interaction.deferReply()
 
         const result = await player.search(query, {
             requestedBy: interaction.user,
-        });
+        })
 
         if (!result.hasTracks())
             return interaction.editReply({
                 embeds: [ErrorEmbed(`No results found for \`${query}\`.`)],
-            });
+            })
 
         try {
-            const { queue, track, searchResult } = await player.play(channel, result, {
-                nodeOptions: {
-                    metadata: interaction,
-                    ...playerOptions,
-                },
-                requestedBy: interaction.user,
-                connectionOptions: { deaf: true },
-            });
+            const { queue, track, searchResult } = await player.play(
+                channel,
+                result,
+                {
+                    nodeOptions: {
+                        metadata: interaction,
+                        ...playerOptions,
+                    },
+                    requestedBy: interaction.user,
+                    connectionOptions: { deaf: true },
+                }
+            )
 
             const embed = BaseEmbed().setFooter({
                 text: `Requested by: ${interaction.user.tag}`,
                 iconURL: interaction.member.displayAvatarURL(),
-            });
+            })
 
             if (searchResult.hasPlaylist() && searchResult.playlist) {
-                const playlist = searchResult.playlist;
+                const playlist = searchResult.playlist
                 embed
                     .setAuthor({
                         name: `Playlist queued - ${playlist.tracks.length} tracks.`,
                     })
                     .setTitle(playlist.title)
                     .setURL(playlist.url)
-                    .setThumbnail(playlist.thumbnail);
+                    .setThumbnail(playlist.thumbnail)
             } else {
                 embed
                     .setAuthor({
-                        name: `Track queued - Position ${queue.node.getTrackPosition(track) + 1}`,
+                        name: `Track queued - Position ${
+                            queue.node.getTrackPosition(track) + 1
+                        }`,
                     })
                     .setTitle(track.title)
                     .setURL(track.url)
-                    .setThumbnail(track.thumbnail);
+                    .setThumbnail(track.thumbnail)
             }
 
-            return interaction.editReply({ embeds: [embed] }).catch(console.error);
+            return interaction
+                .editReply({ embeds: [embed] })
+                .catch(console.error)
         } catch (e) {
-            console.error(e);
+            console.error(e)
             return interaction.editReply({
-                embeds: [ErrorEmbed(`Something went wrong while playing \`${query}\``)],
-            });
+                embeds: [
+                    ErrorEmbed(
+                        `Something went wrong while playing \`${query}\``
+                    ),
+                ],
+            })
         }
     },
-};
+}
 
-module.exports = play;
+module.exports = play
