@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express';
 import { logger } from '../logger/pino';
 import { CustomClient } from '../Classes/CustomClient';
 import { configuration } from './configuration/configuration';
+import { statistics } from './statistics/statistics';
 
 export const rtr = (client: CustomClient) => {
     const router: Router = Router();
@@ -35,6 +36,6 @@ export const rtr = (client: CustomClient) => {
 
     // router.use('/auth', auth);
     router.use('/configuration', configuration(client));
-
+    router.use('/statistics/:guildId', statistics(client));
     return router;
 };
