@@ -18,7 +18,7 @@ import { Common } from '../helper/Common';
 import { CustomClient } from '../Classes/CustomClient';
 
 // TODO - Channels from ended events should be moved to Previous Events category
-// TODO - Check if channels should be threads
+// TODO - Check if messages should be threads
 export class EventController {
     private guild: Guild;
     private client: CustomClient;
@@ -299,7 +299,7 @@ export class EventController {
             name: 'events',
             type: ChannelType.GuildCategory,
             position: 0.1,
-            reason: 'Events category where future events will have their channels created',
+            reason: 'Events category where future events will have their messages created',
         });
     }
 
