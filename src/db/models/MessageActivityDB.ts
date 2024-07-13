@@ -36,7 +36,7 @@ export class MessageActivityDB {
                     },
                 }
             );
-            logger.info(`getMessageActivity: Message activity retrieved - ${guildId}`);
+            logger.debug(`getMessageActivity: Message activity retrieved - ${guildId}`);
             return result;
         } catch (error) {
             logger.error(`getMessageActivity: Error getting Message activity - ${guildId}, Error: ${error}`);
