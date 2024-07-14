@@ -128,14 +128,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# ESLint
-
-.eslintrc
-
-# Prettier
-
-.prettierrc
-
 # Typescript
 
 build/
