@@ -1,4 +1,4 @@
-import mongoose, { Connection, UpdateWriteOpResult } from 'mongoose';
+import mongoose, { Connection, PipelineStage, UpdateWriteOpResult } from 'mongoose';
 import { logger } from '../../logger/pino';
 import { IGuildVoiceActivity, IVoiceActivity } from '../../interfaces/statistics/IVoiceActivity';
 import { guildVoiceActivitySchema } from '../schemas/VoiceActivitySchema';
@@ -12,6 +12,46 @@ export class VoiceActivityDB {
         this.connection = connection;
         guildVoiceActivitySchema.index({ guildId: 1 }); // Create index on for better performance
         this.model = this.connection.model<IGuildVoiceActivity>(this.collection, guildVoiceActivitySchema, this.collection);
+    }
+
+    public async getVoiceStatistics(guildId: string, startDate?: Date, endDate?: Date): Promise<any[]> {
+        try {
+            let matchStage: any = { guildId: guildId };
+
+            if (startDate || endDate) {
+                matchStage['activities.tsJoin'] = {};
+                if (startDate) matchStage['activities.tsJoin'].$gte = startDate.getTime();
+                if (endDate) matchStage['activities.tsJoin'].$lte = endDate.getTime();
+            }
+
+            const pipeline: PipelineStage[] = [
+                { $match: matchStage },
+                { $unwind: '$activities' },
+                { $match: { 'activities.active': false, 'activities.tsLeave': { $exists: true, $ne: null } } },
+                {
+                    $project: {
+                        _id: 0,
+                        userid: '$activities.userId',
+                        tsjoin: { $toString: '$activities.tsJoin' },
+                        tsleave: { $toString: '$activities.tsLeave' },
+                        length: {
+                            $toString: {
+                                $subtract: ['$activities.tsLeave', '$activities.tsJoin'],
+                            },
+                        },
+                        channel: '$activities.channelId',
+                    },
+                },
+                { $sort: { tsjoin: -1 } },
+            ];
+
+            const result = await this.model.aggregate(pipeline);
+            logger.info(`getVoiceStatistics: Retrieved statistics for guild ${guildId}`);
+            return result;
+        } catch (error) {
+            logger.error(`getVoiceStatistics: Error retrieving statistics for guild ${guildId}, Error: ${error}`);
+            throw error;
+        }
     }
 
     public async insertVoiceActivity(guildId: string, event: IVoiceActivity): Promise<void> {
