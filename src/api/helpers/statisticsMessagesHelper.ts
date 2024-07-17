@@ -71,6 +71,48 @@ export class StatisticsMessagesHelper {
         }
     }
 
+    public static async getActivityHeatmap(guildId: string, client: CustomClient, days: number = 30) {
+        try {
+            const messages = await StatisticsMessagesHelper.getDBData(days, guildId, client);
+            const heatmap: { [dayOfWeek: string]: { [hour: string]: number } } = {
+                Sunday: {},
+                Monday: {},
+                Tuesday: {},
+                Wednesday: {},
+                Thursday: {},
+                Friday: {},
+                Saturday: {},
+            };
+
+            messages.activities.forEach((activity) => {
+                const date = new Date(activity.ts);
+                const dayOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
+                const hour = date.getHours().toString();
+
+                if (!heatmap[dayOfWeek][hour]) {
+                    heatmap[dayOfWeek][hour] = 1;
+                } else {
+                    heatmap[dayOfWeek][hour] += 1;
+                }
+            });
+
+            // Initialize missing hours with 0
+            for (const day in heatmap) {
+                for (let i = 0; i < 24; i++) {
+                    const hour = i.toString();
+                    if (!heatmap[day][hour]) {
+                        heatmap[day][hour] = 0;
+                    }
+                }
+            }
+
+            return heatmap;
+        } catch (error) {
+            logger.error(`getActivityHeatmap: Error retrieving activity data for guild ${guildId}, Error: ${error}`);
+            return null;
+        }
+    }
+
     private static async getDBData(days: number, guildId: string, client: CustomClient) {
         // TODO: Implement end days
         const nDaysAgo: Date = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
