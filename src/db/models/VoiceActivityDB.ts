@@ -19,15 +19,33 @@ export class VoiceActivityDB {
             let matchStage: any = { guildId: guildId };
 
             if (startDate || endDate) {
-                matchStage['activities.tsJoin'] = {};
-                if (startDate) matchStage['activities.tsJoin'].$gte = startDate.getTime();
-                if (endDate) matchStage['activities.tsJoin'].$lte = endDate.getTime();
+                matchStage['activities'] = {
+                    $elemMatch: {
+                        active: false,
+                        tsLeave: { $exists: true, $ne: null },
+                    },
+                };
+
+                if (startDate) {
+                    matchStage['activities'].$elemMatch.tsJoin = { $gte: startDate.getTime() };
+                }
+
+                if (endDate) {
+                    matchStage['activities'].$elemMatch.tsLeave = { $lte: endDate.getTime() };
+                }
             }
 
             const pipeline: PipelineStage[] = [
                 { $match: matchStage },
                 { $unwind: '$activities' },
-                { $match: { 'activities.active': false, 'activities.tsLeave': { $exists: true, $ne: null } } },
+                {
+                    $match: {
+                        'activities.active': false,
+                        'activities.tsLeave': { $exists: true, $ne: null },
+                        ...(startDate && { 'activities.tsJoin': { $gte: startDate.getTime() } }),
+                        ...(endDate && { 'activities.tsLeave': { $lte: endDate.getTime() } }),
+                    },
+                },
                 {
                     $project: {
                         _id: 0,
