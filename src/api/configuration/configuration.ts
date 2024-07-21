@@ -44,7 +44,16 @@ export const configuration = (client: CustomClient) => {
 
         try {
             logger.debug('Updating configuration for guild:', config);
-            //client.config.updateConfig(config);
+            const cfg: IConfig = {
+                guildId: guildId,
+                prefix: config.prefix ?? '!',
+                color: config.color ?? '#000000',
+                mainChannelId: config.mainChannelId,
+                rolesChannelId: config.rolesChannelId,
+                eventsGroupId: config.eventsGroupId,
+            };
+            console.log(cfg);
+            client.config.updateConfig(cfg).then(() => client.config.loadConfig());
             res.json({ message: 'Configuration updated successfully' });
         } catch (error) {
             logger.error('Error updating guild configuration:', error);
