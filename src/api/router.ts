@@ -4,6 +4,7 @@ import { CustomClient } from '../Classes/CustomClient';
 import { configuration } from './configuration/configuration';
 import { statistics } from './statistics/statistics';
 import { clientInformation } from './guildInformation/clientInformation';
+import { auth } from './auth/auth';
 
 export const rtr = (client: CustomClient) => {
     const router: Router = Router();
@@ -35,7 +36,7 @@ export const rtr = (client: CustomClient) => {
         }
     });
 
-    // router.use('/auth', auth);
+    router.use('/auth', auth());
     router.use('/configuration', configuration(client));
     router.use('/statistics/:guildId', statistics(client));
     router.use('/clientInfo', clientInformation(client));
