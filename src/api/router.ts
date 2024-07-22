@@ -3,7 +3,7 @@ import { logger } from '../logger/pino';
 import { CustomClient } from '../Classes/CustomClient';
 import { configuration } from './configuration/configuration';
 import { statistics } from './statistics/statistics';
-import { clientInformation } from './guildInformation/clientInformation';
+import { clientInformation } from './clientInformation/clientInformation';
 import { auth } from './auth/auth';
 import { authenticateJWT } from './middleware/authMiddleware';
 

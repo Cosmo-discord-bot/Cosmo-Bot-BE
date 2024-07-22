@@ -4,6 +4,19 @@ import { IConfig } from '../../interfaces/common/IConfig';
 import { CustomClient } from '../../Classes/CustomClient';
 import { validateConfig } from '../validators/validators/configurationValidator';
 import { configurationSchema } from '../validators/schemas/configurationSchema';
+import { ChannelType } from 'discord.js';
+
+interface Channels {
+    name: string;
+    channelId: string;
+    type: ChannelType;
+}
+
+interface IConfigRequest extends IConfig {
+    allChannels: Channels[];
+    textChannels: Channels[];
+    groupChannels: Channels[];
+}
 
 export const configuration = (client: CustomClient) => {
     const configurationRouter: Router = Router();
@@ -20,11 +33,31 @@ export const configuration = (client: CustomClient) => {
 
         try {
             // Assuming you have a method to get configuration for a guild
-            const settings: IConfig | undefined = client.config.configs.get(guildId);
-            if (!settings) {
+            const config: IConfig | undefined = client.config.configs.get(guildId);
+            const allChannels: Channels[] | undefined = client.guilds.cache.get(guildId)?.channels.cache.map((channel) => {
+                return { name: channel.name, channelId: channel.id, type: channel.type };
+            });
+            const textChannels: Channels[] | undefined = allChannels
+                ?.filter((channel) => channel.type === ChannelType.GuildText)
+                .sort((a, b) => a.name.localeCompare(b.name));
+            const groupChannels: Channels[] | undefined = allChannels
+                ?.filter((channel) => channel.type === ChannelType.GuildCategory)
+                .sort((a, b) => a.name.localeCompare(b.name));
+            if (!config || !allChannels || !textChannels || !groupChannels) {
                 logger.error('Settings not found:', guildId);
                 return res.status(404).json({ error: 'Settings not found' });
             }
+            const settings: IConfigRequest = {
+                guildId: config.guildId,
+                prefix: config.prefix,
+                color: config.color,
+                mainChannelId: config.mainChannelId,
+                rolesChannelId: config.rolesChannelId,
+                eventsGroupId: config.eventsGroupId,
+                allChannels,
+                textChannels,
+                groupChannels,
+            };
             res.json(settings);
         } catch (error) {
             logger.error('Error fetching guild configuration:', error);
