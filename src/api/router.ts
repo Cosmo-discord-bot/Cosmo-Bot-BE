@@ -5,6 +5,7 @@ import { configuration } from './configuration/configuration';
 import { statistics } from './statistics/statistics';
 import { clientInformation } from './guildInformation/clientInformation';
 import { auth } from './auth/auth';
+import { authenticateJWT } from './middleware/authMiddleware';
 
 export const rtr = (client: CustomClient) => {
     const router: Router = Router();
@@ -37,6 +38,7 @@ export const rtr = (client: CustomClient) => {
     });
 
     router.use('/auth', auth());
+    router.use(authenticateJWT);
     router.use('/configuration', configuration(client));
     router.use('/statistics/:guildId', statistics(client));
     router.use('/clientInfo', clientInformation(client));

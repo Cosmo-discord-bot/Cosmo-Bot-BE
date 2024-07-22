@@ -21,17 +21,6 @@ export const clientInformation = (client: CustomClient) => {
             return res.status(404).json({ error: 'Guild not found' });
         }
         res.json(guild);
-        // try {
-        //     // Assuming you have a method to get configuration for a guild
-        //     const settings: IConfig | undefined = client.config.configs.get(guildId);
-        //     if (!settings) {
-        //         logger.error('Settings not found:', guildId);
-        //         return res.status(404).json({ error: 'Settings not found' });
-        //     }
-        //     res.json(settings);
-        // } catch (error) {
-        //     logger.error('Error fetching guild configuration:', error);
-        // }
     });
 
     return clientInformation;
