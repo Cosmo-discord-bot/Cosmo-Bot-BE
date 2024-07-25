@@ -1,5 +1,5 @@
 import { CommandInteraction } from 'discord.js';
-import { ICommand } from '../../interfaces/common/ICommand';
+import { ICommand } from '../../definitions/interfaces/common/ICommand';
 
 const ping: ICommand = {
     data: {

@@ -1,14 +1,14 @@
 import { Client, ClientOptions, Collection, REST, Routes } from 'discord.js';
 import { ICommand } from '../interfaces/common/ICommand';
-import { ConfigDB } from '../db/models/ConfigDB';
-import { MongoDB } from '../db/DB';
-import { logger } from '../logger/pino';
-import { EventsDB } from '../db/models/EventsDB';
+import { ConfigDB } from '../../db/models/ConfigDB';
+import { MongoDB } from '../../db/DB';
+import { logger } from '../../logger/pino';
+import { EventsDB } from '../../db/models/EventsDB';
 import { StatisticsWrapper } from './StatisticsWrapper';
 import { Player } from 'discord-player';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { BaseEmbed } from '../helper/embeds';
+import { BaseEmbed } from '../../helper/embeds';
 
 export class CustomClient extends Client {
     commands: Collection<string, ICommand>;
@@ -65,7 +65,7 @@ export class CustomClient extends Client {
     }
 
     public async loadCommands(): Promise<void> {
-        const foldersPath: string = path.join(__dirname, '..', 'commands');
+        const foldersPath: string = path.join(__dirname, '..', '..', 'commands');
         const commandFolders: string[] = fs.readdirSync(foldersPath);
 
         for (const folder of commandFolders) {

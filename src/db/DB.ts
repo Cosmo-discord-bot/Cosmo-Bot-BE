@@ -11,7 +11,8 @@ export class MongoDB {
 
     public connect(): void {
         try {
-            this.connection = mongoose.createConnection(`mongodb://${process.env.DB_URL!}/${process.env.DB_NAME!}`, {} as mongoose.ConnectOptions);
+            // `mongodb://${process.env.DB_URL!}/${process.env.DB_NAME!}`
+            this.connection = mongoose.createConnection(`${process.env.DB_URL!}/${process.env.DB_NAME!}`, {} as mongoose.ConnectOptions);
             logger.info('Connected to MongoDB');
         } catch (error) {
             logger.error('Error connecting to MongoDB:', error);

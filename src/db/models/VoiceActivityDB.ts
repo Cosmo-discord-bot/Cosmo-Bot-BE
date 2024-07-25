@@ -1,6 +1,6 @@
 import mongoose, { Connection, PipelineStage, UpdateWriteOpResult } from 'mongoose';
 import { logger } from '../../logger/pino';
-import { IGuildVoiceActivity, IVoiceActivity } from '../../interfaces/statistics/IVoiceActivity';
+import { IGuildVoiceActivity, IVoiceActivity } from '../../definitions/interfaces/statistics/IVoiceActivity';
 import { guildVoiceActivitySchema } from '../schemas/VoiceActivitySchema';
 
 export class VoiceActivityDB {

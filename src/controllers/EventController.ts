@@ -13,9 +13,9 @@ import {
     User,
 } from 'discord.js';
 import { logger } from '../logger/pino';
-import { IEvent } from '../interfaces/events/IEvent';
+import { IEvent } from '../definitions/interfaces/events/IEvent';
 import { Common } from '../helper/Common';
-import { CustomClient } from '../Classes/CustomClient';
+import { CustomClient } from '../definitions/Classes/CustomClient';
 
 // TODO - Channels from ended events should be moved to Previous Events category
 // TODO - Check if messages should be threads

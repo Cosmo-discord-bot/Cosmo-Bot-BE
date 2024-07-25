@@ -1,5 +1,5 @@
 import { logger } from '../../logger/pino';
-import { CustomClient } from '../../Classes/CustomClient';
+import { CustomClient } from '../../definitions/Classes/CustomClient';
 import { Snowflake } from 'discord.js';
 
 interface VoiceActivity {

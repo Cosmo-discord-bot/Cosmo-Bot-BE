@@ -1,6 +1,6 @@
 import { logger } from '../../logger/pino';
 import { Request, Response, Router } from 'express';
-import { CustomClient } from '../../Classes/CustomClient';
+import { CustomClient } from '../../definitions/Classes/CustomClient';
 
 export const clientInformation = (client: CustomClient) => {
     const clientInformation: Router = Router();

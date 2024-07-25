@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { IConfig } from '../../interfaces/common/IConfig';
+import { IConfig } from '../../definitions/interfaces/common/IConfig';
 
 export const configSchema: Schema<IConfig> = new Schema<IConfig>({
     guildId: { type: String, required: true },

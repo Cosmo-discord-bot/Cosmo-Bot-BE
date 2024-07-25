@@ -1,13 +1,14 @@
 import { Request, Response, Router } from 'express';
 import { logger } from '../logger/pino';
-import { CustomClient } from '../Classes/CustomClient';
+import { CustomClient } from '../definitions/Classes/CustomClient';
 import { configuration } from './configuration/configuration';
 import { statistics } from './statistics/statistics';
 import { clientInformation } from './clientInformation/clientInformation';
 import { auth } from './auth/auth';
-import { authenticateJWT } from './middleware/authMiddleware';
+import { musicPlayer } from './musicPlayer/musicPlayer';
+import { Server } from 'socket.io';
 
-export const rtr = (client: CustomClient) => {
+export const rtr = (client: CustomClient, ioSocket: Server) => {
     const router: Router = Router();
 
     router.get('/health', (req: Request, res: Response): void => {
@@ -38,7 +39,8 @@ export const rtr = (client: CustomClient) => {
     });
 
     router.use('/auth', auth());
-    router.use(authenticateJWT);
+    router.use('/musicPlayer/:guildId', musicPlayer(client, ioSocket));
+    // router.use(authenticateJWT);
     router.use('/configuration', configuration(client));
     router.use('/statistics/:guildId', statistics(client));
     router.use('/clientInfo', clientInformation(client));

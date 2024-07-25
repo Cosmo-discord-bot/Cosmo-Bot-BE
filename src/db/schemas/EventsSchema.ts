@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose';
-import { IEvent } from '../../interfaces/events/IEvent';
+import { IEvent } from '../../definitions/interfaces/events/IEvent';
 
 export const eventSchema: Schema<IEvent> = new Schema<IEvent>({
     eventName: { type: String, required: true },

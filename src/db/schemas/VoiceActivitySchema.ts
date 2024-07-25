@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { IGuildVoiceActivity, IVoiceActivity } from '../../interfaces/statistics/IVoiceActivity';
+import { IGuildVoiceActivity, IVoiceActivity } from '../../definitions/interfaces/statistics/IVoiceActivity';
 
 const voiceActivitySchema: mongoose.Schema<IVoiceActivity> = new mongoose.Schema<IVoiceActivity>(
     {

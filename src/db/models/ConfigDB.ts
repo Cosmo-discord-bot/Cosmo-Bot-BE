@@ -1,4 +1,4 @@
-import { IConfig } from '../../interfaces/common/IConfig';
+import { IConfig } from '../../definitions/interfaces/common/IConfig';
 import mongoose, { Connection } from 'mongoose';
 import { logger } from '../../logger/pino';
 import { Collection } from 'discord.js';

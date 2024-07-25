@@ -1,6 +1,6 @@
 import { logger } from '../../logger/pino';
-import { CustomClient } from '../../Classes/CustomClient';
-import { IGuildMessageActivity } from '../../interfaces/statistics/IMessageActivity';
+import { CustomClient } from '../../definitions/Classes/CustomClient';
+import { IGuildMessageActivity } from '../../definitions/interfaces/statistics/IMessageActivity';
 
 export class StatisticsMessagesHelper {
     public static async getActivityLastNDays(guildId: string, client: CustomClient, days: number = 30) {

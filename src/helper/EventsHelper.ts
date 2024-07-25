@@ -1,10 +1,10 @@
 import { Collection, FetchGuildScheduledEventSubscribersOptions, Guild, GuildScheduledEvent } from 'discord.js';
-import { ICategorizedEvents } from '../interfaces/events/ICategorizedEvents';
-import { IEvent } from '../interfaces/events/IEvent';
+import { ICategorizedEvents } from '../definitions/interfaces/events/ICategorizedEvents';
+import { IEvent } from '../definitions/interfaces/events/IEvent';
 import { logger } from '../logger/pino';
 import { EventController } from '../controllers/EventController';
-import { IEventHandler } from '../interfaces/events/IEventHandler';
-import { CustomClient } from '../Classes/CustomClient';
+import { IEventHandler } from '../definitions/interfaces/events/IEventHandler';
+import { CustomClient } from '../definitions/Classes/CustomClient';
 
 export class EventsHelper {
     public static async __init__(eventHandlers: IEventHandler, guild: Guild, client: CustomClient): Promise<void> {

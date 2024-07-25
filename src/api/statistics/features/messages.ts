@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import { CustomClient } from '../../../Classes/CustomClient';
+import { CustomClient } from '../../../definitions/Classes/CustomClient';
 import { StatisticsMessagesHelper } from '../../helpers/statisticsMessagesHelper';
 
 export const messages = (client: CustomClient) => {

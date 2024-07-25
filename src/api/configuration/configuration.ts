@@ -1,7 +1,7 @@
 import { logger } from '../../logger/pino';
 import { Request, Response, Router } from 'express';
-import { IConfig } from '../../interfaces/common/IConfig';
-import { CustomClient } from '../../Classes/CustomClient';
+import { IConfig } from '../../definitions/interfaces/common/IConfig';
+import { CustomClient } from '../../definitions/Classes/CustomClient';
 import { validateConfig } from '../validators/validators/configurationValidator';
 import { configurationSchema } from '../validators/schemas/configurationSchema';
 import { ChannelType } from 'discord.js';

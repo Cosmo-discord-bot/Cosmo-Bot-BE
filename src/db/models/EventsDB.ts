@@ -1,4 +1,4 @@
-import { IEvent } from '../../interfaces/events/IEvent';
+import { IEvent } from '../../definitions/interfaces/events/IEvent';
 import { logger } from '../../logger/pino';
 import { Connection, Model, UpdateWriteOpResult } from 'mongoose';
 import { eventSchema } from '../schemas/EventsSchema';

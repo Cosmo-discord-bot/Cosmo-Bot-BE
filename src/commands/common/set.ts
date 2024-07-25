@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType, ChannelType, ChatInputCommandInteraction, GuildBasedChannel, Snowflake } from 'discord.js';
-import { ICommand } from '../../interfaces/common/ICommand';
-import { IConfig } from '../../interfaces/common/IConfig';
+import { ICommand } from '../../definitions/interfaces/common/ICommand';
+import { IConfig } from '../../definitions/interfaces/common/IConfig';
 import { logger } from '../../logger/pino';
 
 const set: ICommand = {

@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType, AutocompleteInteraction, ChatInputCommandInteraction, VoiceBasedChannel } from 'discord.js';
-import { ICommand } from '../../interfaces/common/ICommand';
+import { ICommand } from '../../definitions/interfaces/common/ICommand';
 import { BaseEmbed, ErrorEmbed } from '../../helper/embeds';
 import { Player, useMainPlayer } from 'discord-player';
 import playerOptions from '../../config/playerOptions';

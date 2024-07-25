@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { CustomClient } from '../../Classes/CustomClient';
+import { CustomClient } from '../../definitions/Classes/CustomClient';
 import { validateStatistics } from '../validators/validators/statisticsValidator';
 import { statisticsSchema } from '../validators/schemas/statisticsSchema';
 import { messages } from './features/messages';

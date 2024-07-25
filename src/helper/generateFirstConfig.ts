@@ -1,5 +1,5 @@
 import { ChannelType, Guild, GuildBasedChannel } from 'discord.js';
-import { IConfig } from '../interfaces/common/IConfig';
+import { IConfig } from '../definitions/interfaces/common/IConfig';
 import { logger } from '../logger/pino';
 
 export const generateFirstConfig = async (guild: Guild): Promise<IConfig> => {
