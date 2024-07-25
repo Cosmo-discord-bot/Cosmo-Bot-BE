@@ -41,4 +41,6 @@ export const expressEvents = (client: CustomClient) => {
     server.listen(port, () => {
         logger.info(`API is running at http://localhost:${port}`);
     });
+
+    return io;
 };
