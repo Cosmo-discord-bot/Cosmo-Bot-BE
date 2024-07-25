@@ -1,6 +1,6 @@
 {
     "name": "diplomskabot",
-    "version": "0.3.7",
+    "version": "0.3.8",
     "description": "Multi server discord bot",
     "main": "main.ts",
     "scripts": {
@@ -43,7 +43,7 @@
         "mediaplex": "^0.0.9",
         "mongoose": "^8.4.1",
         "pino": "^8.21.0",
-      "socket.io": "^4.7.5",
+        "socket.io": "^4.7.5",
         "zod": "^3.23.8"
     },
     "devDependencies": {
