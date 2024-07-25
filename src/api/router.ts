@@ -7,6 +7,7 @@ import { clientInformation } from './clientInformation/clientInformation';
 import { auth } from './auth/auth';
 import { musicPlayer } from './musicPlayer/musicPlayer';
 import { Server } from 'socket.io';
+import { authenticateJWT } from './middleware/authMiddleware';
 
 export const rtr = (client: CustomClient, ioSocket: Server) => {
     const router: Router = Router();
@@ -39,8 +40,8 @@ export const rtr = (client: CustomClient, ioSocket: Server) => {
     });
 
     router.use('/auth', auth());
-    router.use('/musicPlayer/:guildId', musicPlayer(client, ioSocket));
-    // router.use(authenticateJWT);
+    router.use('/musicPlayer/:guildId', musicPlayer());
+    router.use(authenticateJWT);
     router.use('/configuration', configuration(client));
     router.use('/statistics/:guildId', statistics(client));
     router.use('/clientInfo', clientInformation(client));
