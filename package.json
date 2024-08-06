@@ -9,6 +9,7 @@
         "build1": "swc src --out-dir build --sync & tsc --pretty --skipLibCheck --noEmit",
         "build": "tsc --noEmit && swc src --out-dir build",
         "dev": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.spec.ts\" --exec \"ts-node src/main.ts\"\n",
+      "start-dev": "npm run build-start-pretty-pino",
         "start": "node build/main.js",
         "start-pretty-pino": "node build/main.js | pino-pretty",
         "build-start-pretty-pino": "npm run build && npm run start-pretty-pino",
@@ -31,7 +32,7 @@
     "homepage": "https://github.com/J4ncHy/diplomskabot#readme",
     "dependencies": {
         "@discord-player/extractor": "^4.4.7",
-        "@distube/ytdl-core": "^4.13.5",
+      "@distube/ytdl-core": "^4.13.7",
         "axios": "^1.7.2",
         "cors": "^2.8.5",
         "discord-player": "^6.6.10",
