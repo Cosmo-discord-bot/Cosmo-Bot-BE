@@ -3,9 +3,9 @@ import { Request, Response, Router } from 'express';
 import { CustomClient } from '../../definitions/Classes/CustomClient';
 
 export const clientInformation = (client: CustomClient) => {
-    const clientInformation: Router = Router();
+    const clientInformationRouter: Router = Router();
 
-    clientInformation.get('/guilds', (req: Request, res: Response) => {
+    clientInformationRouter.get('/guilds', (req: Request, res: Response) => {
         // Check if the user is authenticated
         if (!req.user) {
             logger.error('User not authenticated');
@@ -31,5 +31,5 @@ export const clientInformation = (client: CustomClient) => {
         res.json(commonGuilds);
     });
 
-    return clientInformation;
+    return clientInformationRouter;
 };
