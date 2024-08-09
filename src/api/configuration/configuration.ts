@@ -4,7 +4,7 @@ import { IConfig } from '../../definitions/interfaces/common/IConfig';
 import { CustomClient } from '../../definitions/Classes/CustomClient';
 import { validateConfig } from '../validators/validators/configurationValidator';
 import { configurationSchema } from '../validators/schemas/configurationSchema';
-import { ChannelType } from 'discord.js';
+import { ChannelType, Role } from 'discord.js';
 
 interface Channels {
     name: string;
@@ -16,6 +16,9 @@ interface IConfigRequest extends IConfig {
     allChannels: Channels[];
     textChannels: Channels[];
     groupChannels: Channels[];
+    guildRoles: Role[];
+    djRoles: string[];
+    RBACRoles: string[];
 }
 
 export const configuration = (client: CustomClient) => {
@@ -40,10 +43,14 @@ export const configuration = (client: CustomClient) => {
             const textChannels: Channels[] | undefined = allChannels
                 ?.filter((channel) => channel.type === ChannelType.GuildText)
                 .sort((a, b) => a.name.localeCompare(b.name));
+
             const groupChannels: Channels[] | undefined = allChannels
                 ?.filter((channel) => channel.type === ChannelType.GuildCategory)
                 .sort((a, b) => a.name.localeCompare(b.name));
-            if (!config || !allChannels || !textChannels || !groupChannels) {
+
+            const guildRoles: Role[] | undefined = guild.roles.cache.map((role) => role);
+
+            if (!config || !allChannels || !textChannels || !groupChannels || !guildRoles) {
                 logger.error('Settings not found:', guildId);
                 return res.status(404).json({ error: 'Settings not found' });
             }
@@ -54,9 +61,12 @@ export const configuration = (client: CustomClient) => {
                 mainChannelId: config.mainChannelId,
                 rolesChannelId: config.rolesChannelId,
                 eventsGroupId: config.eventsGroupId,
+                djRoles: config.djRoles,
+                RBACRoles: config.RBACRoles,
                 allChannels,
                 textChannels,
                 groupChannels,
+                guildRoles,
             };
             res.json(settings);
         } catch (error) {
@@ -84,6 +94,8 @@ export const configuration = (client: CustomClient) => {
                 mainChannelId: config.mainChannelId,
                 rolesChannelId: config.rolesChannelId,
                 eventsGroupId: config.eventsGroupId,
+                djRoles: config.djRoles,
+                RBACRoles: config.RBACRoles,
             };
             console.log(cfg);
             client.config.updateConfig(cfg).then(() => client.config.loadConfig());

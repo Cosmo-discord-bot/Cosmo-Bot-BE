@@ -8,4 +8,14 @@ export const configSchema: Schema<IConfig> = new Schema<IConfig>({
     mainChannelId: { type: String, required: true },
     rolesChannelId: { type: String, required: true },
     eventsGroupId: { type: String, required: true },
+    djRoles: {
+        type: [String],
+        required: false,
+        default: [],
+    },
+    RBACRoles: {
+        type: [String],
+        required: false,
+        default: [],
+    },
 });

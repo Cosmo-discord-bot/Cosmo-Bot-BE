@@ -5,4 +5,6 @@ export interface IConfig {
     mainChannelId: string;
     rolesChannelId: string;
     eventsGroupId: string;
+    djRoles: string[];
+    RBACRoles: string[];
 }
