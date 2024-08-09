@@ -6,10 +6,10 @@ import { statistics } from './statistics/statistics';
 import { clientInformation } from './clientInformation/clientInformation';
 import { auth } from './auth/auth';
 import { musicPlayer } from './musicPlayer/musicPlayer';
-import { Server } from 'socket.io';
 import { authenticateJWT } from './middleware/authMiddleware';
+import { guildInformation } from './guildInformation/guildInformation';
 
-export const rtr = (client: CustomClient, ioSocket: Server) => {
+export const rtr = (client: CustomClient) => {
     const router: Router = Router();
 
     router.get('/health', (req: Request, res: Response): void => {
@@ -39,11 +39,12 @@ export const rtr = (client: CustomClient, ioSocket: Server) => {
         }
     });
 
-    router.use('/auth', auth());
-    router.use('/musicPlayer/:guildId', musicPlayer());
+    router.use('/authenticate', auth());
     router.use(authenticateJWT);
+    router.use('/musicPlayer/:guildId', musicPlayer());
     router.use('/configuration', configuration(client));
     router.use('/statistics/:guildId', statistics(client));
+    router.use('/guildInfo', guildInformation(client));
     router.use('/clientInfo', clientInformation(client));
     return router;
 };
