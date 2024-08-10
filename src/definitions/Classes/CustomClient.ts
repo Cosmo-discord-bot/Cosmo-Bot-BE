@@ -7,12 +7,14 @@ import { EventsDB } from '../../db/models/EventsDB';
 import { StatisticsWrapper } from './StatisticsWrapper';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
+import { DockerController } from '../../controllers/DockerController';
 
 export class CustomClient extends Client {
     commands: Collection<string, ICommand>;
     config!: ConfigDB;
     events!: EventsDB;
     statisticsWrapper!: StatisticsWrapper;
+    dockerController!: DockerController;
 
     constructor(options: ClientOptions) {
         super(options);
@@ -31,6 +33,7 @@ export class CustomClient extends Client {
             await this.events.loadEvents();
 
             this.statisticsWrapper = new StatisticsWrapper(db.connection!);
+            this.dockerController = new DockerController();
 
             await this.loadCommands();
             this.registerCommand();

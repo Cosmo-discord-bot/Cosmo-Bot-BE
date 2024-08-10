@@ -33,6 +33,8 @@ export const discordClientEvents = (client: CustomClient, eventHandlers: IEventH
             }
             await client.config.loadConfig();
             logger.info('Initialization complete!');
+
+            await client.dockerController.getRunningContainers();
         });
     });
 

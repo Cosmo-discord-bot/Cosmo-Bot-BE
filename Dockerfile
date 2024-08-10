@@ -1,5 +1,5 @@
 # Stage 1: Build Stage
-FROM node:18-alpine as builder
+FROM node:18-alpine AS builder
 
 # Install pnpm globally
 RUN npm install -g pnpm
@@ -12,7 +12,7 @@ RUN pnpm install && \
     pnpm run build
 
 # Stage 2: Production Stage
-FROM node:18-alpine as production
+FROM node:18-alpine AS production
 
 # Install pnpm globally
 RUN npm install -g pnpm

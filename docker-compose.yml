@@ -1,7 +1,6 @@
-version: "3.7"
 services:
   cosmo-api:
-    image: cosmo-bot-be
+    # image: cosmo-bot-be
     build:
       context: .
       dockerfile: Dockerfile
@@ -10,3 +9,5 @@ services:
       - .env.deployment.local
     ports:
       - "8083:8083"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

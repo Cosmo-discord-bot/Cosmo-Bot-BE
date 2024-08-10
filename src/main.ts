@@ -7,6 +7,7 @@ import { expressEvents } from './events/expressEvents';
 import { Server } from 'socket.io';
 import { musicPlayerEvents } from './events/musicPlayerEvents';
 import { Player } from 'discord-player';
+import { logger } from './logger/pino';
 
 const client: CustomClient = new CustomClient({
     intents: [
