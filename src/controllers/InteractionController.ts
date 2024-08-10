@@ -1,5 +1,5 @@
-import {Interaction} from 'discord.js';
-import {CustomClient} from "../Classes/CustomClient";
+import { Interaction } from 'discord.js';
+import { CustomClient } from '../definitions/Classes/CustomClient';
 
 export const interactionController = async (interaction: Interaction): Promise<void> => {
     if (!interaction.isChatInputCommand()) return;

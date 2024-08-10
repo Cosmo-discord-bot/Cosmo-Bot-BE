@@ -1,6 +1,6 @@
 import mongoose, { Connection } from 'mongoose';
 import { logger } from '../../logger/pino';
-import { IGuildMessageActivity, IMessageActivity } from '../../interfaces/statistics/IMessageActivity';
+import { IGuildMessageActivity, IMessageActivity } from '../../definitions/interfaces/statistics/IMessageActivity';
 import { guildMessageActivitySchema } from '../schemas/MessageActivitySchema';
 
 export class MessageActivityDB {
@@ -10,19 +10,44 @@ export class MessageActivityDB {
 
     constructor(connection: Connection) {
         this.connection = connection;
-        this.model = this.connection.model<IGuildMessageActivity>(
-            this.collection,
-            guildMessageActivitySchema,
-            this.collection
-        );
+        this.model = this.connection.model<IGuildMessageActivity>(this.collection, guildMessageActivitySchema, this.collection);
+    }
+
+    public async getMessageActivity(guildId: string, startDate: Date, endDate: Date): Promise<IGuildMessageActivity | null> {
+        try {
+            const result: IGuildMessageActivity | null = await this.model.findOne(
+                {
+                    guildId,
+                    'activities.ts': {
+                        $gte: startDate.getTime(),
+                        $lte: endDate.getTime(),
+                    },
+                },
+                {
+                    guildId: 1,
+                    activities: {
+                        $filter: {
+                            input: '$activities',
+                            as: 'activity',
+                            cond: {
+                                $and: [{ $gte: ['$$activity.ts', startDate.getTime()] }, { $lte: ['$$activity.ts', endDate.getTime()] }],
+                            },
+                        },
+                    },
+                }
+            );
+            logger.debug(`getMessageActivity: Message activity retrieved - ${guildId}`);
+            return result;
+        } catch (error) {
+            logger.error(`getMessageActivity: Error getting Message activity - ${guildId}, Error: ${error}`);
+            return null;
+        }
     }
 
     public async insertMessageActivity(guildId: string, messageActivity: IMessageActivity): Promise<void> {
         try {
             await this.model.updateOne({ guildId }, { $push: { activities: messageActivity } }, { upsert: true });
-            logger.info(
-                `insertMessageActivity: Message activity inserted - ${guildId} - ${messageActivity.userId} - ${messageActivity.channelId}`
-            );
+            logger.info(`insertMessageActivity: Message activity inserted - ${guildId} - ${messageActivity.userId} - ${messageActivity.channelId}`);
         } catch (error) {
             logger.error(`insertMessageActivity: Error inserting Message activity - ${guildId}, Error: ${error}`);
         }

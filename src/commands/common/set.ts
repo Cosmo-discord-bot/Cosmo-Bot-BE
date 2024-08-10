@@ -1,12 +1,6 @@
-import {
-    ApplicationCommandOptionType,
-    ChannelType,
-    ChatInputCommandInteraction,
-    GuildBasedChannel,
-    Snowflake,
-} from 'discord.js';
-import { ICommand } from '../../interfaces/common/ICommand';
-import { IConfig } from '../../interfaces/common/IConfig';
+import { ApplicationCommandOptionType, ChannelType, ChatInputCommandInteraction, GuildBasedChannel, Snowflake } from 'discord.js';
+import { ICommand } from '../../definitions/interfaces/common/ICommand';
+import { IConfig } from '../../definitions/interfaces/common/IConfig';
 import { logger } from '../../logger/pino';
 
 const set: ICommand = {
@@ -39,7 +33,10 @@ const set: ICommand = {
             if (subcommand === 'mainchannel') {
                 const channel = interaction.options.getChannel('channel');
                 if (!channel || channel.type !== ChannelType.GuildText) {
-                    await interaction.reply({ content: 'Please provide a valid text channel.', ephemeral: true });
+                    await interaction.reply({
+                        content: 'Please provide a valid text channel.',
+                        ephemeral: true,
+                    });
                     return;
                 }
                 setMainchannel(channel.id, interaction);
@@ -57,11 +54,17 @@ const set: ICommand = {
              */
         } catch (error) {
             if (error == 'No subcommand provided') {
-                await interaction.reply({ content: 'Please provide a subcommand.', ephemeral: true });
+                await interaction.reply({
+                    content: 'Please provide a subcommand.',
+                    ephemeral: true,
+                });
                 return;
             }
             console.error(error);
-            await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+            await interaction.reply({
+                content: 'There was an error while executing this command!',
+                ephemeral: true,
+            });
         }
     },
 };
@@ -73,9 +76,7 @@ const setPrefix = (prefix: string, interaction: ChatInputCommandInteraction): vo
             throw new Error(`setPrefix: Wrong prefix`);
         }
 
-        const config: IConfig = interaction.client.config.configs.find(
-            (config: IConfig): boolean => config.guildId === interaction.guildId
-        )!;
+        const config: IConfig = interaction.client.config.configs.find((config: IConfig): boolean => config.guildId === interaction.guildId)!;
         config.prefix = prefix;
         interaction.client.config.updateConfig(config).then(() => interaction.client.config.loadConfig());
         interaction.reply(`setPrefix: Changed to ${prefix}`);
@@ -94,9 +95,7 @@ const setPrefix = (prefix: string, interaction: ChatInputCommandInteraction): vo
 const setMainchannel = (mainchannel: Snowflake, interaction: ChatInputCommandInteraction): void => {
     //const mainChannelRegex: RegExp = new RegExp('^\\d{17,19}$');
     try {
-        const config: IConfig = interaction.client.config.configs.find(
-            (config: IConfig): boolean => config.guildId === interaction.guildId
-        )!;
+        const config: IConfig = interaction.client.config.configs.find((config: IConfig): boolean => config.guildId === interaction.guildId)!;
 
         const channel: GuildBasedChannel | null = interaction.guild!.channels.resolve(mainchannel);
         if (!channel) throw new Error('setMainChannel: channel id does not exist');

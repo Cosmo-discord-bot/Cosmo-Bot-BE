@@ -1,6 +1,6 @@
-import mongoose, { Connection, UpdateWriteOpResult } from 'mongoose';
+import mongoose, { Connection, PipelineStage, UpdateWriteOpResult } from 'mongoose';
 import { logger } from '../../logger/pino';
-import { IGuildVoiceActivity, IVoiceActivity } from '../../interfaces/statistics/IVoiceActivity';
+import { IGuildVoiceActivity, IVoiceActivity } from '../../definitions/interfaces/statistics/IVoiceActivity';
 import { guildVoiceActivitySchema } from '../schemas/VoiceActivitySchema';
 
 export class VoiceActivityDB {
@@ -11,11 +11,65 @@ export class VoiceActivityDB {
     constructor(connection: Connection) {
         this.connection = connection;
         guildVoiceActivitySchema.index({ guildId: 1 }); // Create index on for better performance
-        this.model = this.connection.model<IGuildVoiceActivity>(
-            this.collection,
-            guildVoiceActivitySchema,
-            this.collection
-        );
+        this.model = this.connection.model<IGuildVoiceActivity>(this.collection, guildVoiceActivitySchema, this.collection);
+    }
+
+    public async getVoiceStatistics(guildId: string, startDate?: Date, endDate?: Date): Promise<any[]> {
+        try {
+            let matchStage: any = { guildId: guildId };
+
+            if (startDate || endDate) {
+                matchStage['activities'] = {
+                    $elemMatch: {
+                        active: false,
+                        tsLeave: { $exists: true, $ne: null },
+                    },
+                };
+
+                if (startDate) {
+                    matchStage['activities'].$elemMatch.tsJoin = { $gte: startDate.getTime() };
+                }
+
+                if (endDate) {
+                    matchStage['activities'].$elemMatch.tsLeave = { $lte: endDate.getTime() };
+                }
+            }
+
+            const pipeline: PipelineStage[] = [
+                { $match: matchStage },
+                { $unwind: '$activities' },
+                {
+                    $match: {
+                        'activities.active': false,
+                        'activities.tsLeave': { $exists: true, $ne: null },
+                        ...(startDate && { 'activities.tsJoin': { $gte: startDate.getTime() } }),
+                        ...(endDate && { 'activities.tsLeave': { $lte: endDate.getTime() } }),
+                    },
+                },
+                {
+                    $project: {
+                        _id: 0,
+                        userid: '$activities.userId',
+                        tsjoin: { $toString: '$activities.tsJoin' },
+                        tsleave: { $toString: '$activities.tsLeave' },
+                        length: {
+                            $toString: {
+                                $subtract: ['$activities.tsLeave', '$activities.tsJoin'],
+                            },
+                        },
+                        channel: '$activities.channelId',
+                    },
+                },
+                { $sort: { tsjoin: -1 } },
+            ];
+
+            const result = await this.model.aggregate(pipeline);
+            logger.info(`getVoiceStatistics: Retrieved statistics for guild ${guildId}`);
+            return result;
+        } catch (error) {
+            logger.error(`getVoiceStatistics: Error retrieving statistics for guild ${guildId}, Error: ${error}`);
+            throw error;
+        }
     }
 
     public async insertVoiceActivity(guildId: string, event: IVoiceActivity): Promise<void> {
@@ -49,9 +103,7 @@ export class VoiceActivityDB {
             );
 
             if (result.matchedCount === 0) {
-                logger.warn(
-                    `No matching active activity found for user ${userId} in channel ${channelId} of guild ${guildId}`
-                );
+                logger.warn(`No matching active activity found for user ${userId} in channel ${channelId} of guild ${guildId}`);
             } else {
                 logger.info(`updateLeaveVoiceActivity: Leave event updated - ${guildId} - ${userId} - ${channelId}`);
             }

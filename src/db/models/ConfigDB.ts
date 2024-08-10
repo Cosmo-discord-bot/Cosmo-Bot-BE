@@ -1,4 +1,4 @@
-import { IConfig } from '../../interfaces/common/IConfig';
+import { IConfig } from '../../definitions/interfaces/common/IConfig';
 import mongoose, { Connection } from 'mongoose';
 import { logger } from '../../logger/pino';
 import { Collection } from 'discord.js';
@@ -28,15 +28,15 @@ export class ConfigDB {
         await this.model.create(config);
     }
 
-    public async updateConfig(config: IConfig): Promise<void> {
+    public async updateConfig(config: Partial<IConfig>): Promise<void> {
         try {
-            let response: mongoose.UpdateWriteOpResult = await this.model.replaceOne(
-                { guildId: config.guildId },
-                config
-            );
+            const { guildId, ...updateFields } = config;
+            const response: mongoose.UpdateWriteOpResult = await this.model.updateOne({ guildId: guildId }, { $set: updateFields }, { upsert: true });
             if (!response.acknowledged) throw new Error('updateConfig: Config updating failed');
+            logger.debug('Config updated successfully:', response);
         } catch (error) {
-            logger.error(`updateConfig: Config updating failed - ${config.guildId}`);
+            logger.error(`updateConfig: Config updating failed - ${config.guildId}`, error);
+            throw error;
         }
     }
 }

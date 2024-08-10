@@ -1,5 +1,5 @@
 import { BaseEmbed } from '../../helper/embeds';
-import { ICommand } from '../../interfaces/common/ICommand';
+import { ICommand } from '../../definitions/interfaces/common/ICommand';
 import { useQueue } from 'discord-player';
 import { ChatInputCommandInteraction } from 'discord.js';
 

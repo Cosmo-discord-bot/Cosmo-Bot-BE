@@ -1,4 +1,4 @@
-require('dotenv').config();
+import 'dotenv/config';
 import mongoose, { Connection } from 'mongoose';
 import { logger } from '../logger/pino';
 
@@ -9,15 +9,10 @@ export class MongoDB {
         this.connection = null;
     }
 
-    public async connect(): Promise<void> {
+    public connect(): void {
         try {
-            this.connection = await mongoose.createConnection(
-                `mongodb://${process.env.DB_URL!}/${process.env.DB_NAME!}`,
-                {
-                    useNewUrlParser: true,
-                    useUnifiedTopology: true,
-                } as mongoose.ConnectOptions
-            );
+            // `mongodb://${process.env.DB_URL!}/${process.env.DB_NAME!}`
+            this.connection = mongoose.createConnection(`${process.env.DB_URL!}/${process.env.DB_NAME!}`, {} as mongoose.ConnectOptions);
             logger.info('Connected to MongoDB');
         } catch (error) {
             logger.error('Error connecting to MongoDB:', error);

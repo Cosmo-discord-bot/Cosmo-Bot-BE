@@ -1,4 +1,4 @@
-import { ICommand } from '../../interfaces/common/ICommand';
+import { ICommand } from '../../definitions/interfaces/common/ICommand';
 import { BaseEmbed, ErrorEmbed } from '../../helper/embeds';
 import { useHistory, useQueue } from 'discord-player';
 import { ApplicationCommandOptionType, ChatInputCommandInteraction } from 'discord.js';
@@ -7,7 +7,7 @@ const songs: ICommand = {
     data: {
         name: 'songs',
         description: 'Display songs from the queue or history.',
-        options: ['queue', 'history'].map(type => ({
+        options: ['queue', 'history'].map((type) => ({
             type: ApplicationCommandOptionType.Subcommand,
             name: type,
             description: `Display songs from the ${type}.`,
@@ -68,18 +68,9 @@ const songs: ICommand = {
         const tracks = songsdata.slice(start, end);
 
         const embed = BaseEmbed()
-            .setDescription(
-                tracks
-                    .map(
-                        (track, i) =>
-                            `${start + i + 1} - [${track.title}](${track.url}) ~ [${track.requestedBy?.toString()}]`
-                    )
-                    .join('\n')
-            )
+            .setDescription(tracks.map((track, i) => `${start + i + 1} - [${track.title}](${track.url}) ~ [${track.requestedBy?.toString()}]`).join('\n'))
             .setFooter({
-                text: `Page ${page} of ${maxPage} | Showing songs ${start + 1} to ${
-                    end > songsLength ? songsLength : end
-                } of ${songsLength}`,
+                text: `Page ${page} of ${maxPage} | Showing songs ${start + 1} to ${end > songsLength ? songsLength : end} of ${songsLength}`,
                 iconURL: interaction.user.displayAvatarURL(),
             });
 
