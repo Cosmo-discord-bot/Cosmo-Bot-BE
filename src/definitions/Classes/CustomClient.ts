@@ -1,21 +1,20 @@
 import { Client, ClientOptions, Collection, REST, Routes } from 'discord.js';
 import { ICommand } from '../interfaces/common/ICommand';
-import { ConfigDB } from '../db/models/ConfigDB';
-import { MongoDB } from '../db/DB';
-import { logger } from '../logger/pino';
-import { EventsDB } from '../db/models/EventsDB';
+import { ConfigDB } from '../../db/models/ConfigDB';
+import { MongoDB } from '../../db/DB';
+import { logger } from '../../logger/pino';
+import { EventsDB } from '../../db/models/EventsDB';
 import { StatisticsWrapper } from './StatisticsWrapper';
-import { Player } from 'discord-player';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import {BaseEmbed} from "../helper/embeds";
+import { DockerController } from '../../controllers/DockerController';
 
 export class CustomClient extends Client {
     commands: Collection<string, ICommand>;
     config!: ConfigDB;
     events!: EventsDB;
     statisticsWrapper!: StatisticsWrapper;
-    player!: Player;
+    dockerController!: DockerController;
 
     constructor(options: ClientOptions) {
         super(options);
@@ -34,43 +33,22 @@ export class CustomClient extends Client {
             await this.events.loadEvents();
 
             this.statisticsWrapper = new StatisticsWrapper(db.connection!);
+            this.dockerController = new DockerController();
 
             await this.loadCommands();
             this.registerCommand();
-
-            this.player = new Player(this);
-            await this.player.extractors.loadDefault();
-
-            this.player.events.on('playerStart', (queue, track) => {
-                if (!track.requestedBy) track.requestedBy = queue.player.client.user;
-
-                const embed = BaseEmbed()
-                    .setAuthor({ name: 'Now playing' })
-                    .setTitle(track.title)
-                    .setURL(track.url)
-                    .setThumbnail(track.thumbnail)
-                    .setFooter({
-                        text: `Played by: ${track.requestedBy?.tag}`,
-                        iconURL: track.requestedBy?.displayAvatarURL(),
-                    });
-
-                return queue.metadata.channel.send({ embeds: [embed] });
-            });
-            this.player.events.on('audioTrackAdd', queue => {
-                logger.info(`Track added to queue: ${queue.tracks.at(0)?.title}`);
-            });
         } catch (e) {
             logger.error(e);
         }
     }
 
     public async loadCommands(): Promise<void> {
-        const foldersPath: string = path.join(__dirname, '..', 'commands');
+        const foldersPath: string = path.join(__dirname, '..', '..', 'commands');
         const commandFolders: string[] = fs.readdirSync(foldersPath);
 
         for (const folder of commandFolders) {
             const commandsPath: string = path.join(foldersPath, folder);
-            const commandFiles: string[] = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+            const commandFiles: string[] = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.js'));
             for (const file of commandFiles) {
                 const filePath: string = path.join(commandsPath, file);
                 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -78,9 +56,7 @@ export class CustomClient extends Client {
                 if ('data' in command && 'execute' in command) {
                     this.commands.set(command.data.name, command);
                 } else {
-                    logger.warn(
-                        `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
-                    );
+                    logger.warn(`[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`);
                 }
             }
         }
@@ -93,7 +69,7 @@ export class CustomClient extends Client {
             logger.error('Token or Client ID not found');
             throw 'Token or Client ID not found';
         }
-        const commands = this.commands.map(command => command.data);
+        const commands = this.commands.map((command) => command.data);
         const rest: REST = new REST({ version: '10' }).setToken(token);
         //for (const command of this.commands.values()) {
         for (const guildId of this.config.configs.keys()) {
@@ -102,7 +78,7 @@ export class CustomClient extends Client {
                 .put(Routes.applicationGuildCommands(clientId, guildId), {
                     body: commands,
                 })
-                .catch(err => {
+                .catch((err) => {
                     console.log(err);
                 });
         }

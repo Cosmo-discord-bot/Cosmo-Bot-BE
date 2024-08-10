@@ -1,4 +1,4 @@
-import { IEvent } from '../../interfaces/events/IEvent';
+import { IEvent } from '../../definitions/interfaces/events/IEvent';
 import { logger } from '../../logger/pino';
 import { Connection, Model, UpdateWriteOpResult } from 'mongoose';
 import { eventSchema } from '../schemas/EventsSchema';
@@ -33,7 +33,7 @@ export class EventsDB {
 
     public async updateEvents(event: IEvent): Promise<void> {
         try {
-            let response: UpdateWriteOpResult = await this.model.replaceOne({ eventId: event.eventId }, event);
+            const response: UpdateWriteOpResult = await this.model.replaceOne({ eventId: event.eventId }, event);
             if (!response.acknowledged) throw new Error('updateConfig: Config updating failed');
         } catch (error) {
             logger.error(`updateConfig: Config updating failed - ${event.guildId}`);
@@ -42,7 +42,7 @@ export class EventsDB {
 
     public async deleteEvent(eventId: string): Promise<void> {
         try {
-            let response = await this.model.deleteOne({ eventId: eventId });
+            const response = await this.model.deleteOne({ eventId: eventId });
             if (!response.acknowledged) throw new Error('deleteEvent: Event deletion failed');
             this.events.delete(eventId);
         } catch (error) {

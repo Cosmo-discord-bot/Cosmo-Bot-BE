@@ -1,5 +1,5 @@
 import { BaseEmbed, ErrorEmbed, SuccessEmbed } from '../../helper/embeds';
-import { ICommand } from '../../interfaces/common/ICommand';
+import { ICommand } from '../../definitions/interfaces/common/ICommand';
 import { useQueue } from 'discord-player';
 import { ApplicationCommandOptionType, ChatInputCommandInteraction } from 'discord.js';
 
@@ -44,11 +44,7 @@ const seek: ICommand = {
         if (timestamp > queue.currentTrack.durationMS) {
             return interaction.reply({
                 ephemeral: true,
-                embeds: [
-                    ErrorEmbed(
-                        `Please provide a valid timestamp within 0 and ${queue.currentTrack.durationMS / 1000}.`
-                    ),
-                ],
+                embeds: [ErrorEmbed(`Please provide a valid timestamp within 0 and ${queue.currentTrack.durationMS / 1000}.`)],
             });
         }
 

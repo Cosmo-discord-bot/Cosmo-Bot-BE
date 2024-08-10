@@ -1,7 +1,6 @@
 import {
     CategoryChannel,
     ChannelType,
-    Client,
     Guild,
     GuildBasedChannel,
     GuildScheduledEvent,
@@ -14,12 +13,12 @@ import {
     User,
 } from 'discord.js';
 import { logger } from '../logger/pino';
-import { IEvent } from '../interfaces/events/IEvent';
+import { IEvent } from '../definitions/interfaces/events/IEvent';
 import { Common } from '../helper/Common';
-import {CustomClient} from "../Classes/CustomClient";
+import { CustomClient } from '../definitions/Classes/CustomClient';
 
 // TODO - Channels from ended events should be moved to Previous Events category
-// TODO - Check if channels should be threads
+// TODO - Check if messages should be threads
 export class EventController {
     private guild: Guild;
     private client: CustomClient;
@@ -38,9 +37,7 @@ export class EventController {
         }
         this.guild = guild;
 
-        this.eventsCategory = guild.channels.cache.find(
-            channel => channel.id === this.client.config.configs.get(guildId)?.eventsGroupId
-        ) as CategoryChannel;
+        this.eventsCategory = guild.channels.cache.find((channel) => channel.id === this.client.config.configs.get(guildId)?.eventsGroupId) as CategoryChannel;
     }
 
     /*
@@ -54,14 +51,10 @@ export class EventController {
     When an event is created, parse description for @mentions and roles and share link of event to #general
     */
     public async createEvent(event: GuildScheduledEvent) {
-        logger.info(
-            `Creating event: ${event.name} in guild: ${this.client.guilds.cache.get(event.guildId)!.name} - ${
-                event.guildId
-            }`
-        );
+        logger.info(`Creating event: ${event.name} in guild: ${this.client.guilds.cache.get(event.guildId)!.name} - ${event.guildId}`);
         const sanitizedEventName: string = Common.sanitizeEventName(event.name);
         try {
-            let createdRole = await this.guild.roles.create({
+            const createdRole = await this.guild.roles.create({
                 name: sanitizedEventName,
                 color: 'White',
                 reason: 'Event role for ' + sanitizedEventName,
@@ -96,15 +89,8 @@ export class EventController {
       role name
       active status
      */
-    public updateEvent(
-        oldEvent: GuildScheduledEvent | PartialGuildScheduledEvent,
-        newEvent: GuildScheduledEvent | PartialGuildScheduledEvent
-    ) {
-        logger.info(
-            `Updating event: ${oldEvent.name} in guild: ${this.client.guilds.cache.get(oldEvent.guildId)!.name} - ${
-                oldEvent.guildId
-            }`
-        );
+    public updateEvent(oldEvent: GuildScheduledEvent | PartialGuildScheduledEvent, newEvent: GuildScheduledEvent | PartialGuildScheduledEvent) {
+        logger.info(`Updating event: ${oldEvent.name} in guild: ${this.client.guilds.cache.get(oldEvent.guildId)!.name} - ${oldEvent.guildId}`);
         try {
             const foundEvent = this.client.events.events.get(oldEvent.id);
             if (!foundEvent) {
@@ -118,7 +104,7 @@ export class EventController {
             if (newEvent.name) {
                 sanitizedEventName = Common.sanitizeEventName(newEvent.name);
                 if (foundEvent) {
-                    this.guild.roles.cache.find(role => role.id === foundEvent.roleId)!.setName(sanitizedEventName);
+                    this.guild.roles.cache.find((role) => role.id === foundEvent.roleId)!.setName(sanitizedEventName);
                 }
                 this.client.events.updateEvents({
                     eventId: newEvent.id,
@@ -133,7 +119,7 @@ export class EventController {
             if (newEvent.status == GuildScheduledEventStatus.Completed) {
                 this.client.events.deleteEvent(newEvent.id);
 
-                this.guild.roles.cache.find(role => role.id === roleId)?.delete();
+                this.guild.roles.cache.find((role) => role.id === roleId)?.delete();
             }
         } catch (error) {
             logger.error(`Error updating event: ${error}`);
@@ -141,9 +127,7 @@ export class EventController {
     }
 
     public deleteEventByIEvent(event: IEvent) {
-        logger.info(
-            `Deleting event: ${event.eventName} in guild: ${this.client.guilds.cache.get(event.guildId)!.name}`
-        );
+        logger.info(`Deleting event: ${event.eventName} in guild: ${this.client.guilds.cache.get(event.guildId)!.name}`);
         try {
             const foundEvent = this.client.events.events.get(event.eventId);
             if (!foundEvent) {
@@ -153,7 +137,7 @@ export class EventController {
             if (!roleId) {
                 throw new Error('Role not found');
             }
-            this.guild.roles.cache.find(role => role.id === roleId)?.delete();
+            this.guild.roles.cache.find((role) => role.id === roleId)?.delete();
             logger.info(`Role deleted: ${roleId}`);
 
             this.client.events.deleteEvent(event.eventId);
@@ -163,11 +147,7 @@ export class EventController {
     }
 
     public deleteEvent(event: GuildScheduledEvent | PartialGuildScheduledEvent) {
-        logger.info(
-            `Deleting event: ${event.name} in guild: ${this.client.guilds.cache.get(event.guildId)!.name} - ${
-                event.guildId
-            }`
-        );
+        logger.info(`Deleting event: ${event.name} in guild: ${this.client.guilds.cache.get(event.guildId)!.name} - ${event.guildId}`);
         try {
             const foundEvent = this.client.events.events.get(event.id);
             if (!foundEvent) {
@@ -177,7 +157,7 @@ export class EventController {
             if (!roleId) {
                 throw new Error('Role not found');
             }
-            this.guild.roles.cache.find(role => role.id === roleId)?.delete();
+            this.guild.roles.cache.find((role) => role.id === roleId)?.delete();
             logger.info(`Role deleted: ${roleId}`);
 
             this.client.events.deleteEvent(event.id);
@@ -190,7 +170,7 @@ export class EventController {
         try {
             logger.info(`Adding user: ${user.username} to event: ${event.name}`);
             const role = this.getRoleFromEvent(event);
-            this.guild.members.cache.find(member => member.id === user.id)?.roles.add(role);
+            this.guild.members.cache.find((member) => member.id === user.id)?.roles.add(role);
         } catch (error) {
             logger.error(`Error adding user to event: ${error}`);
         }
@@ -200,7 +180,7 @@ export class EventController {
         try {
             logger.info(`Removing user: ${user.username} from event: ${event.name}`);
             const role = this.getRoleFromEvent(event);
-            this.guild.members.cache.find(member => member.id === user.id)?.roles.remove(role);
+            this.guild.members.cache.find((member) => member.id === user.id)?.roles.remove(role);
         } catch (error) {
             logger.error(`Error removing user from event: ${error}`);
         }
@@ -210,7 +190,7 @@ export class EventController {
         try {
             logger.info(`Removing all users from event: ${event.name}`);
             const role = this.getRoleFromEvent(event);
-            role.members.forEach(member => {
+            role.members.forEach((member) => {
                 member.roles.remove(role);
             });
         } catch (error) {
@@ -219,16 +199,14 @@ export class EventController {
     }
 
     private parseEventDescriptionForMentions(event: GuildScheduledEvent | PartialGuildScheduledEvent): string[] {
-        let mentionedRoles: string[] = [];
+        const mentionedRoles: string[] = [];
         if (event.description) {
             const mentions = event.description.match(/@[^ ]+/g);
             logger.debug(`Mentions: ${mentions}`);
             if (mentions) {
-                mentions.forEach(mention => {
+                mentions.forEach((mention) => {
                     // Check for mentioned roles
-                    const role = this.guild.roles.cache.find(
-                        role => role.name.toLowerCase() === mention.substring(1).toLowerCase()
-                    );
+                    const role = this.guild.roles.cache.find((role) => role.name.toLowerCase() === mention.substring(1).toLowerCase());
                     if (role) {
                         mentionedRoles.push(role.id);
                     }
@@ -240,14 +218,11 @@ export class EventController {
         return mentionedRoles;
     }
 
-    private async sendEventLinkToGeneral(
-        event: GuildScheduledEvent | PartialGuildScheduledEvent,
-        mentionedRoles: string[]
-    ) {
-        let mainChannel = this.guild.channels.cache.get(this.client.config.configs.get(this.guild.id)!.mainChannelId);
+    private async sendEventLinkToGeneral(event: GuildScheduledEvent | PartialGuildScheduledEvent, mentionedRoles: string[]) {
+        const mainChannel = this.guild.channels.cache.get(this.client.config.configs.get(this.guild.id)!.mainChannelId);
         if (mainChannel && mainChannel.isTextBased()) {
             const mentionedRolesStr = createTaggableRoleStringFromIds(mentionedRoles);
-            let message = await mainChannel.send(`${event.url} - ${mentionedRolesStr}`);
+            const message = await mainChannel.send(`${event.url} - ${mentionedRolesStr}`);
             logger.debug(`Event URL: ${event.url} - ${mentionedRolesStr}`);
             await message.react('✅');
             await message.react('❌');
@@ -259,7 +234,10 @@ export class EventController {
                 return false;
             };
 
-            const collector: ReactionCollector = message.createReactionCollector({ filter, time: 60_000 });
+            const collector: ReactionCollector = message.createReactionCollector({
+                filter,
+                time: 60_000,
+            });
 
             collector.on('collect', (reaction, user) => {
                 if (reaction.emoji.name === '✅' && user.id === event.creatorId) {
@@ -276,8 +254,8 @@ export class EventController {
                 }
             });
 
-            collector.on('end', collected => {
-                message.reactions.removeAll().catch(error => {
+            collector.on('end', (collected) => {
+                message.reactions.removeAll().catch((error) => {
                     logger.error(`Error removing reactions from ${event.id} ${event.name}: ${error}`);
                 });
                 logger.info(`Collected ${collected.size} reactions for ${event.id} ${event.name}`);
@@ -296,7 +274,7 @@ export class EventController {
         if (!roleId) {
             throw new Error('Role not found');
         }
-        const role = this.guild.roles.cache.find(role => role.id === roleId);
+        const role = this.guild.roles.cache.find((role) => role.id === roleId);
         if (!role) {
             throw new Error('Role not found');
         }
@@ -321,7 +299,7 @@ export class EventController {
             name: 'events',
             type: ChannelType.GuildCategory,
             position: 0.1,
-            reason: 'Events category where future events will have their channels created',
+            reason: 'Events category where future events will have their messages created',
         });
     }
 
@@ -368,5 +346,5 @@ export class EventController {
 }
 
 function createTaggableRoleStringFromIds(ids: string[]): string {
-    return ids.map(id => `<@&${id}>`).join(' ');
+    return ids.map((id) => `<@&${id}>`).join(' ');
 }

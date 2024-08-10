@@ -1,10 +1,5 @@
-import {
-    ApplicationCommandOptionType,
-    AutocompleteInteraction,
-    ChatInputCommandInteraction,
-    VoiceBasedChannel,
-} from 'discord.js';
-import { ICommand } from '../../interfaces/common/ICommand';
+import { ApplicationCommandOptionType, AutocompleteInteraction, ChatInputCommandInteraction, VoiceBasedChannel } from 'discord.js';
+import { ICommand } from '../../definitions/interfaces/common/ICommand';
 import { BaseEmbed, ErrorEmbed } from '../../helper/embeds';
 import { Player, useMainPlayer } from 'discord-player';
 import playerOptions from '../../config/playerOptions';
@@ -38,12 +33,9 @@ const play: ICommand = {
             return;
         }
 
-        const tracks =
-            searchResult.hasPlaylist() && searchResult.playlist
-                ? searchResult.playlist.tracks.slice(0, 24)
-                : searchResult.tracks.slice(0, 10);
+        const tracks = searchResult.hasPlaylist() && searchResult.playlist ? searchResult.playlist.tracks.slice(0, 24) : searchResult.tracks.slice(0, 10);
 
-        const formattedResult = tracks.map(track => ({
+        const formattedResult = tracks.map((track) => ({
             name: track.title,
             value: track.url,
         }));

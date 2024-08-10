@@ -1,7 +1,7 @@
-import { MessageActivityDB } from '../db/models/MessageActivityDB';
-import { VoiceActivityDB } from '../db/models/VoiceActivityDB';
+import { MessageActivityDB } from '../../db/models/MessageActivityDB';
+import { VoiceActivityDB } from '../../db/models/VoiceActivityDB';
 import { Connection } from 'mongoose';
-import { ChannelActivityDB } from '../db/models/ChannelActivityDB';
+import { ChannelActivityDB } from '../../db/models/ChannelActivityDB';
 
 export class StatisticsWrapper {
     public voiceActivity: VoiceActivityDB;
