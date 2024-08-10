@@ -1,0 +1,37 @@
+{
+  "name": "Cosmo Bot Node.js & TypeScript",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-18-bullseye",
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  "mounts": [
+    "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+  ],
+
+  "forwardPorts": [8083],
+
+  "postCreateCommand": "npm install -g pnpm && pnpm install",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker"
+      ]
+    },
+    "jetbrains": {
+      "backend": "WebStorm"
+    }
+  },
+
+  "remoteEnv": {
+    "NODE_ENV": "development"
+  },
+
+  "runArgs": [
+    "--env-file", "${localWorkspaceFolder}/.env"
+  ]
+}
